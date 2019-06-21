@@ -1,2 +1,6 @@
 # transaction-manager
 A Small, light-weight Rest API based Java application without any framework, which does not require any server.
+
+## References
+- https://dzone.com/articles/lightweight-embedded-java-rest-server-without-a-fr
+- https://dzone.com/articles/how-i-test-my-java-classes-for-thread-safety
