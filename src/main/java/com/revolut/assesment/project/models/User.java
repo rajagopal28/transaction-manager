@@ -10,6 +10,7 @@ import java.util.Date;
 @Data
 @ToString
 public class User {
+    private int id;
     private String firstName;
     private String lastName;
     private String city;
