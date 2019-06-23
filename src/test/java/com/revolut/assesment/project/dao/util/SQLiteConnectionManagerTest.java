@@ -1,9 +1,11 @@
 package com.revolut.assesment.project.dao.util;
 
+import org.apache.commons.dbutils.QueryRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
@@ -69,6 +71,21 @@ public class SQLiteConnectionManagerTest {
         connectionManager.closeConnection(mockConnection);
         Mockito.verify(mockConnection, Mockito.never()).commit();
         Mockito.verify(mockConnection).close();
+    }
+
+    @Test
+    public void testCreateTables() throws Exception {
+       SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+
+       QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
+       FieldSetter.setField(connectionManager, SQLiteConnectionManager.class.getDeclaredField("queryRunner"), mockQueryRunner);
+
+        Connection mockConnection = PowerMockito.mock(Connection.class);
+
+        connectionManager.createTable(mockConnection);
+
+        Mockito.verify(mockQueryRunner).update(Mockito.eq(mockConnection), Mockito.anyString());
+        Mockito.verify(mockConnection, Mockito.never()).close();
     }
 
 }

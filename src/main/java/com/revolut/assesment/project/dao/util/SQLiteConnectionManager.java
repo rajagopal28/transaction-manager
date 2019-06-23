@@ -1,6 +1,9 @@
 package com.revolut.assesment.project.dao.util;
 
 
+import com.revolut.assesment.project.constants.ApplicationConstants;
+import org.apache.commons.dbutils.QueryRunner;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -10,6 +13,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQLiteConnectionManager {
+
+    private QueryRunner queryRunner = new QueryRunner();
 
     private final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
     private final String SQLITE_DB_FILE_PATH = "transactions.db"; // relative path of the DB file in resources folder
@@ -24,9 +29,10 @@ public class SQLiteConnectionManager {
         String absolutePath = file.getAbsolutePath();
 
         String connectionURL = SQLITE_JDBC_PREFIX + absolutePath;
-        System.out.println(connectionURL);
+
         Connection connection = DriverManager.getConnection(connectionURL);
         connection.setAutoCommit(enableAutoCommit);
+
         return connection;
     }
 
@@ -37,6 +43,12 @@ public class SQLiteConnectionManager {
 
     public void closeConnection(Connection connection) throws SQLException {
         connection.close();
+    }
+
+    public boolean createTable(Connection conn) throws SQLException {
+        int insertedRecords = queryRunner.update(conn,
+                ApplicationConstants.CREATE_USER_TABLE_QUERY);
+        return insertedRecords > 0;
     }
 
 }
