@@ -10,9 +10,9 @@ import java.util.Date;
 @Builder
 @ToString
 public class Transaction {
-    private int id;
-    private int fromAccount;
-    private int toAccount;
+    private Integer id;
+    private Integer fromAccount;
+    private Integer toAccount;
     private Date timeCreated;
     private double amount;
     private String currency;

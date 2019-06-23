@@ -21,9 +21,9 @@ public class TransactionTest {
                 .id(100)
                 .build();
         assertNotNull(transaction);
-        assertEquals(100, transaction.getId());
-        assertEquals(101, transaction.getFromAccount());
-        assertEquals(202, transaction.getToAccount());
+        assertEquals(100, transaction.getId().intValue());
+        assertEquals(101, transaction.getFromAccount().intValue());
+        assertEquals(202, transaction.getToAccount().intValue());
         assertEquals(timeCreated, transaction.getTimeCreated());
         assertEquals(currency, transaction.getCurrency());
         assertEquals(23.00, transaction.getAmount(), 0.001);

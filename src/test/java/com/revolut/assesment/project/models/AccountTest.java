@@ -24,8 +24,8 @@ public class AccountTest {
         assertNotNull(account);
         assertEquals(ApplicationConstants.AccountType.CREDIT, account.getAccountType());
         assertEquals(curr, account.getCurrency());
-        assertEquals(100, account.getId());
-        assertEquals(121, account.getUserId());
+        assertEquals(100, account.getId().intValue());
+        assertEquals(121, account.getUserId().intValue());
         assertEquals(timeCreated, account.getTimeCreated());
         assertEquals(balance, account.getBalance(), 0.001);
     }

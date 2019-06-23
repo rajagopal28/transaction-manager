@@ -11,8 +11,8 @@ import java.util.Date;
 @ToString
 @Builder
 public class Account {
-    private int id;
-    private int userId;
+    private Integer id;
+    private Integer userId;
     private AccountType accountType;
     private String currency;
     private double balance;
