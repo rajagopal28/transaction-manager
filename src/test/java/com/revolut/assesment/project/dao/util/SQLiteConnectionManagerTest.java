@@ -51,4 +51,24 @@ public class SQLiteConnectionManagerTest {
         Mockito.verify(mockConnection).setAutoCommit(false);
     }
 
+    @Test
+    public void testCommitAndCloseConnectionMethods() throws Exception {
+        Connection mockConnection = PowerMockito.mock(Connection.class);
+        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+
+        connectionManager.commitAndCloseConnection(mockConnection);
+        Mockito.verify(mockConnection).commit();
+        Mockito.verify(mockConnection).close();
+    }
+
+    @Test
+    public void testCloseConnectionMethods() throws Exception {
+        Connection mockConnection = PowerMockito.mock(Connection.class);
+        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+
+        connectionManager.closeConnection(mockConnection);
+        Mockito.verify(mockConnection, Mockito.never()).commit();
+        Mockito.verify(mockConnection).close();
+    }
+
 }

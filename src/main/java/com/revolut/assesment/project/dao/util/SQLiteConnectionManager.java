@@ -30,4 +30,13 @@ public class SQLiteConnectionManager {
         return connection;
     }
 
+    public void commitAndCloseConnection(Connection connection) throws SQLException {
+        connection.commit();
+        closeConnection(connection);
+    }
+
+    public void closeConnection(Connection connection) throws SQLException {
+        connection.close();
+    }
+
 }
