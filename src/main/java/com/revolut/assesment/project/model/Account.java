@@ -1,4 +1,4 @@
-package com.revolut.assesment.project.models;
+package com.revolut.assesment.project.model;
 
 import com.revolut.assesment.project.constants.ApplicationConstants.AccountType;
 import lombok.Builder;

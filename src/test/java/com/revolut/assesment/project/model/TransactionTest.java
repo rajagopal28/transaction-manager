@@ -1,4 +1,4 @@
-package com.revolut.assesment.project.models;
+package com.revolut.assesment.project.model;
 
 import org.junit.Test;
 

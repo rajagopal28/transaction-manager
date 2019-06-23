@@ -1,6 +1,6 @@
 package com.revolut.assesment.project.dao.util;
 
-import com.revolut.assesment.project.models.User;
+import com.revolut.assesment.project.model.User;
 
 import java.util.ArrayList;
 import java.util.List;

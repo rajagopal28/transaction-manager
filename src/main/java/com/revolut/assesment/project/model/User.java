@@ -1,4 +1,4 @@
-package com.revolut.assesment.project.models;
+package com.revolut.assesment.project.model;
 
 import lombok.Builder;
 import lombok.Data;

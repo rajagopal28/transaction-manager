@@ -1,9 +1,7 @@
-package com.revolut.assesment.project.models;
+package com.revolut.assesment.project.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class UserTest {
 

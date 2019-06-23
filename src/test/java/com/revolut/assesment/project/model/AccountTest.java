@@ -1,7 +1,6 @@
-package com.revolut.assesment.project.models;
+package com.revolut.assesment.project.model;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;

@@ -3,7 +3,7 @@ package com.revolut.assesment.project.dao;
 import com.revolut.assesment.project.exception.DatabaseException;
 import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
-import com.revolut.assesment.project.models.User;
+import com.revolut.assesment.project.model.User;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.junit.Test;
