@@ -1,5 +1,6 @@
 package com.revolut.assesment.project.dao.util;
 
+import com.revolut.assesment.project.exception.DatabaseException;
 import org.apache.commons.dbutils.QueryRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import static org.junit.Assert.*;
 
@@ -87,10 +89,10 @@ public class SQLiteConnectionManagerTest {
 
     @Test
     public void testCreateTables() throws Exception {
-       SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
 
-       QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-       FieldSetter.setField(connectionManager, SQLiteConnectionManager.class.getDeclaredField("queryRunner"), mockQueryRunner);
+        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
+        FieldSetter.setField(connectionManager, SQLiteConnectionManager.class.getDeclaredField("queryRunner"), mockQueryRunner);
 
         Connection mockConnection = PowerMockito.mock(Connection.class);
 
@@ -98,6 +100,41 @@ public class SQLiteConnectionManagerTest {
 
         Mockito.verify(mockQueryRunner).update(Mockito.eq(mockConnection), Mockito.anyString());
         Mockito.verify(mockConnection, Mockito.never()).close();
+    }
+
+    @Test(expected = DatabaseException.class)
+    public void testCreateTablesException() throws Exception {
+        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+
+        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
+        FieldSetter.setField(connectionManager, SQLiteConnectionManager.class.getDeclaredField("queryRunner"), mockQueryRunner);
+
+        Connection mockConnection = PowerMockito.mock(Connection.class);
+        Mockito.when(mockQueryRunner.update(Mockito.eq(mockConnection), Mockito.anyString())).thenThrow(new SQLException());
+
+        connectionManager.createTable(mockConnection);
+    }
+
+    @Test(expected = DatabaseException.class)
+    public void testCommitAndCloseConnectionMethodsWithDBException() throws Exception {
+        PowerMockito.mockStatic(DriverManager.class);
+
+        Connection mockConnection = PowerMockito.mock(Connection.class);
+        BDDMockito.given(DriverManager.getConnection(Mockito.anyString())).willThrow(new SQLException());
+
+        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+        connectionManager.getConnection(false);
+
+    }
+
+    @Test(expected = DatabaseException.class)
+    public void testGetConnectionWithAutoCommitWithDBException() throws Exception {
+        PowerMockito.mockStatic(DriverManager.class);
+
+        BDDMockito.given(DriverManager.getConnection(Mockito.anyString())).willThrow(new SQLException());
+
+        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+        connectionManager.getConnection();
     }
 
 }

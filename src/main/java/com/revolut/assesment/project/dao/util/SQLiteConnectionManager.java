@@ -2,6 +2,7 @@ package com.revolut.assesment.project.dao.util;
 
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
+import com.revolut.assesment.project.exception.DatabaseException;
 import org.apache.commons.dbutils.QueryRunner;
 
 import java.io.File;
@@ -19,40 +20,59 @@ public class SQLiteConnectionManager {
     private final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
     private final String SQLITE_DB_FILE_PATH = "transactions.db"; // relative path of the DB file in resources folder
 
-    public Connection getConnection() throws URISyntaxException, SQLException {
+    public Connection getConnection() {
         return getConnection(true);
     }
 
-    public Connection getConnection(boolean enableAutoCommit) throws URISyntaxException, SQLException  {
-        URL res = getClass().getClassLoader().getResource(SQLITE_DB_FILE_PATH);
-        File file = Paths.get(res.toURI()).toFile();
-        String absolutePath = file.getAbsolutePath();
+    public Connection getConnection(boolean enableAutoCommit) {
+        try {
+            URL res = getClass().getClassLoader().getResource(SQLITE_DB_FILE_PATH);
+            File file = Paths.get(res.toURI()).toFile();
+            String absolutePath = file.getAbsolutePath();
 
-        String connectionURL = SQLITE_JDBC_PREFIX + absolutePath;
+            String connectionURL = SQLITE_JDBC_PREFIX + absolutePath;
 
-        Connection connection = DriverManager.getConnection(connectionURL);
-        connection.setAutoCommit(enableAutoCommit);
+            Connection connection = DriverManager.getConnection(connectionURL);
+            connection.setAutoCommit(enableAutoCommit);
 
-        return connection;
+            return connection;
+        } catch (URISyntaxException | SQLException e ) {
+            throw new DatabaseException(e);
+        }
+
     }
 
-    public void commitAndCloseConnection(Connection connection) throws SQLException {
-        if(connection != null) {
-            connection.commit();
-            closeConnection(connection);
+    public void commitAndCloseConnection(Connection connection) {
+        try {
+            if(connection != null) {
+                connection.commit();
+                closeConnection(connection);
+            }
+        } catch (SQLException se) {
+            throw new DatabaseException(se);
         }
+
     }
 
-    public void closeConnection(Connection connection) throws SQLException {
-        if(connection != null) {
-            connection.close();
+    public void closeConnection(Connection connection) {
+        try {
+            if(connection != null) {
+                connection.close();
+            }
+        } catch (SQLException se) {
+            throw new DatabaseException(se);
         }
+
     }
 
     public boolean createTable(Connection conn) throws SQLException {
-        int insertedRecords = queryRunner.update(conn,
-                ApplicationConstants.CREATE_USER_TABLE_QUERY);
-        return insertedRecords > 0;
+        try {
+            int insertedRecords = queryRunner.update(conn,
+                    ApplicationConstants.CREATE_USER_TABLE_QUERY);
+            return insertedRecords > 0;
+        } catch (SQLException se) {
+            throw new DatabaseException(se);
+        }
     }
 
 }
