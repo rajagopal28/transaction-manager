@@ -74,6 +74,18 @@ public class SQLiteConnectionManagerTest {
     }
 
     @Test
+    public void testCloseConnectionMethodsForNullConnections() throws Exception {
+       SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+        connectionManager.closeConnection(null);
+    }
+
+    @Test
+    public void testCommitAndCloseConnectionMethodsForNullConnections() throws Exception {
+        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
+        connectionManager.commitAndCloseConnection(null);
+    }
+
+    @Test
     public void testCreateTables() throws Exception {
        SQLiteConnectionManager connectionManager = PowerMockito.spy(new SQLiteConnectionManager());
 

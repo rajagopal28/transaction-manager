@@ -37,12 +37,16 @@ public class SQLiteConnectionManager {
     }
 
     public void commitAndCloseConnection(Connection connection) throws SQLException {
-        connection.commit();
-        closeConnection(connection);
+        if(connection != null) {
+            connection.commit();
+            closeConnection(connection);
+        }
     }
 
     public void closeConnection(Connection connection) throws SQLException {
-        connection.close();
+        if(connection != null) {
+            connection.close();
+        }
     }
 
     public boolean createTable(Connection conn) throws SQLException {
