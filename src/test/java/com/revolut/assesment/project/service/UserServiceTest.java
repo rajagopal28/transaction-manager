@@ -9,6 +9,7 @@ import org.mockito.internal.util.reflection.FieldSetter;
 
 import java.sql.Connection;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -80,6 +81,8 @@ public class UserServiceTest {
         assertTrue(actual);
         Mockito.verify(mockManager).getConnection();
         Mockito.verify(mockDao).addUser(u1, mockConnection);
+
+        System.out.println(new Date());
     }
 
 

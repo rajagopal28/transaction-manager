@@ -26,6 +26,10 @@ public class QueryUtil {
             conditionals.add(" EMAIL = ? ");
             params.add(user.getEmail());
         }
+        if(user.getCity() != null) {
+            conditionals.add(" CITY = ? ");
+            params.add(user.getCity());
+        }
         if(user.getPhoneNumber() != null) {
             conditionals.add(" PHONE_NUMBER = ? ");
             params.add(user.getPhoneNumber());

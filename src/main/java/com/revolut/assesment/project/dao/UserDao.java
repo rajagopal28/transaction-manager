@@ -34,8 +34,8 @@ public class UserDao {
             int insertedRecords = queryRunner.update(conn,
                     ApplicationConstants.INSERT_INTO_USER_QUERY, user.getFirstName(),
                     user.getLastName(), user.getGender(), user.getEmail(),
-                    user.getPhoneNumber(), user.getDob(),
-                    new Date(System.currentTimeMillis()));
+                    user.getPhoneNumber(), user.getCity(),
+                    user.getDob());
             return insertedRecords > 0;
         } catch (SQLException se) {
             throw new DatabaseException(se);
