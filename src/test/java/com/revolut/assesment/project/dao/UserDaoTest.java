@@ -54,4 +54,23 @@ public class UserDaoTest {
         assertTrue(condition);
     }
 
+    @Test
+    public void testGetUser() throws Exception {
+        UserDao userDao = new UserDao();
+
+        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
+        Connection con = Mockito.mock(Connection.class);
+
+        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
+
+
+        User result = Mockito.mock(User.class);
+        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class))).thenReturn(result);
+
+        User user = userDao.getUser(User.builder().build(), con);
+        assertEquals(result, user);
+        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class));
+
+    }
+
 }
