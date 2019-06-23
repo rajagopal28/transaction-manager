@@ -11,6 +11,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,8 @@ public class UserDao {
             int insertedRecords = queryRunner.update(conn,
                     ApplicationConstants.INSERT_INTO_USER_QUERY, user.getFirstName(),
                     user.getLastName(), user.getGender(), user.getEmail(),
-                    user.getPhoneNumber(), user.getDateOfBirth(),
-                    user.getTimeCreated());
+                    user.getPhoneNumber(), user.getDob(),
+                    new Date(System.currentTimeMillis()));
             return insertedRecords > 0;
         } catch (SQLException se) {
             throw new DatabaseException(se);
