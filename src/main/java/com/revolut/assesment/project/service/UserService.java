@@ -25,10 +25,9 @@ public class UserService {
         return foundUser;
     }
 
-    public boolean addUser(User user) {
+    public void addUser(User user) {
         Connection connection = connectionManager.getConnection();// auto commit connection
-        boolean b = userDao.addUser(user, connection);
+        userDao.addUser(user, connection);
         connectionManager.closeConnection(connection);
-        return b;
     }
 }

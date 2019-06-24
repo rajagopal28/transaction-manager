@@ -74,11 +74,8 @@ public class UserServiceTest {
         Mockito.when(mockManager.getConnection()).thenReturn(mockConnection);
 
         User u1 = Mockito.mock(User.class);
-        boolean expected = true;
-        Mockito.when(mockDao.addUser(u1, mockConnection)).thenReturn(expected);
 
-        boolean actual = userService.addUser(u1);
-        assertTrue(actual);
+        userService.addUser(u1);
         Mockito.verify(mockManager).getConnection();
         Mockito.verify(mockDao).addUser(u1, mockConnection);
 
