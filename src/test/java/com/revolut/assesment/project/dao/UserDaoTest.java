@@ -2,6 +2,7 @@ package com.revolut.assesment.project.dao;
 
 import com.revolut.assesment.project.exception.DatabaseException;
 import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
+import com.revolut.assesment.project.exception.NoDataUpdatedException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
 import org.apache.commons.dbutils.QueryRunner;
@@ -53,9 +54,26 @@ public class UserDaoTest {
 
         User mockUser = Mockito.mock(User.class);
 
-        boolean condition = userDao.addUser(mockUser, con);
+        userDao.addUser(mockUser, con);
         Mockito.verify(mockQueryRunner).update(Mockito.eq(con), Mockito.anyString(), Mockito.any());
-        assertTrue(condition);
+    }
+
+    @Test(expected = NoDataUpdatedException.class)
+    public void testCreateUserFailure() throws Exception {
+        UserDao userDao = new UserDao();
+
+        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
+        Connection con = Mockito.mock(Connection.class);
+
+        Mockito.when(mockQueryRunner.update(Mockito.eq(con),
+                Mockito.anyString(), Mockito.any())).thenReturn(0);
+
+        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
+
+        User mockUser = Mockito.mock(User.class);
+
+        userDao.addUser(mockUser, con);
+        Mockito.verify(mockQueryRunner).update(Mockito.eq(con), Mockito.anyString(), Mockito.any());
     }
 
     @Test

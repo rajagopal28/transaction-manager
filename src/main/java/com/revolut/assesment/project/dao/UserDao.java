@@ -4,6 +4,7 @@ import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.dao.util.QueryUtil;
 import com.revolut.assesment.project.exception.DatabaseException;
 import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
+import com.revolut.assesment.project.exception.NoDataUpdatedException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
 import org.apache.commons.dbutils.QueryRunner;
@@ -29,14 +30,16 @@ public class UserDao {
 
     }
 
-    public boolean addUser(User user, Connection conn) {
+    public void addUser(User user, Connection conn) {
         try {
             int insertedRecords = queryRunner.update(conn,
                     ApplicationConstants.INSERT_INTO_USER_QUERY, user.getFirstName(),
                     user.getLastName(), user.getGender(), user.getEmail(),
                     user.getPhoneNumber(), user.getCity(),
                     user.getDob());
-            return insertedRecords > 0;
+            if(insertedRecords == 0) {
+                throw new NoDataUpdatedException();
+            }
         } catch (SQLException se) {
             throw new DatabaseException(se);
         }
