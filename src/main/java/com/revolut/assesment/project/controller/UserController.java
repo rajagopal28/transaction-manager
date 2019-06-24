@@ -1,18 +1,18 @@
 package com.revolut.assesment.project.controller;
 
-import com.revolut.assesment.project.dao.UserDao;
+import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.dao.util.SQLiteConnectionManager;
 import com.revolut.assesment.project.exception.DatabaseException;
 import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
+import com.revolut.assesment.project.exception.NoDataUpdatedException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
 import com.revolut.assesment.project.service.UserService;
+import com.revolut.assesment.project.vo.MessageVO;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("/users")
@@ -28,7 +28,7 @@ public class UserController {
            return Response.status(200).entity(users).build();
        } catch (DatabaseException de) {
            de.printStackTrace();
-           return Response.status(500).build();
+           return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE).build()).build();
        }
     }
 
@@ -37,12 +37,14 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(User user) {
         try {
-            boolean result = userService.addUser(user);
-            int status = result ? 201 : 304;
-            return Response.status(status).entity(user).build();
-        } catch (DatabaseException de) {
+            userService.addUser(user);
+            return Response.status(201).entity(user).build();
+        } catch (NoDataUpdatedException nde) {
+            nde.printStackTrace();;
+            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED).build()).build();
+        } catch(DatabaseException de) {
             de.printStackTrace();
-            return Response.status(500).build();
+            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE).build()).build();
         }
     }
 
@@ -55,10 +57,10 @@ public class UserController {
             return Response.status(200).entity(result).build();
         } catch (DatabaseException de) {
             de.printStackTrace();
-            return Response.status(500).build();
+            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE).build()).build();
         } catch (MoreThanOneRecordFoundException | NoRecordsFoundException nre) {
             nre.printStackTrace();
-            return Response.status(404).build();
+            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
         }
     }
 

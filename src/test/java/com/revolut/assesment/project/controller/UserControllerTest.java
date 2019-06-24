@@ -1,9 +1,12 @@
 package com.revolut.assesment.project.controller;
 
+import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.exception.DatabaseException;
+import com.revolut.assesment.project.exception.NoDataUpdatedException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
 import com.revolut.assesment.project.service.UserService;
+import com.revolut.assesment.project.vo.MessageVO;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
@@ -11,7 +14,6 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
 import static org.junit.Assert.*;
 
@@ -44,15 +46,14 @@ public class UserControllerTest {
 
         UserService mockService = Mockito.mock(UserService.class);
 
-        List<User> expected = Arrays.asList(Mockito.mock(User.class));
         Mockito.when(mockService.getUsers()).thenThrow(new DatabaseException(new Exception()));
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
         Response response = userController.getAllUsers();
-        Object actual = response.getEntity();
+        MessageVO actual = (MessageVO)response.getEntity();
 
-        assertNull(actual);
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE, actual.getMessage());
         assertEquals(500, response.getStatus());
         Mockito.verify(mockService).getUsers();
     }
@@ -90,9 +91,9 @@ public class UserControllerTest {
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
         Response response = userController.getUser(123);
-        Object actual = response.getEntity();
+        MessageVO actual = (MessageVO)response.getEntity();
 
-        assertNull(actual);
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER, actual.getMessage());
         assertEquals(404, response.getStatus());
         Mockito.verify(mockService).getUser(Mockito.any(User.class));
     }
@@ -110,9 +111,9 @@ public class UserControllerTest {
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
         Response response = userController.getUser(123);
-        Object actual = response.getEntity();
+        MessageVO actual = (MessageVO)response.getEntity();
 
-        assertNull(actual);
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE, actual.getMessage());
         assertEquals(500, response.getStatus());
         Mockito.verify(mockService).getUser(Mockito.any(User.class));
     }
@@ -125,7 +126,7 @@ public class UserControllerTest {
         UserService mockService = Mockito.mock(UserService.class);
 
         User expected = Mockito.mock(User.class);
-        Mockito.when(mockService.addUser(Mockito.any(User.class))).thenReturn(true);
+
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
@@ -144,15 +145,16 @@ public class UserControllerTest {
 
         UserService mockService = Mockito.mock(UserService.class);
 
-        User expected = Mockito.mock(User.class);
-        Mockito.when(mockService.addUser(Mockito.any(User.class))).thenReturn(false);
+        User mock = Mockito.mock(User.class);
+
+        Mockito.doThrow(new NoDataUpdatedException()).when(mockService).addUser(mock);
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
-        Response response = userController.createUser(expected);
-        Object actual = response.getEntity();
+        Response response = userController.createUser(mock);
+        MessageVO actual = (MessageVO)response.getEntity();
 
-        assertEquals(expected, actual);
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED, actual.getMessage());
         assertEquals(304, response.getStatus());
         Mockito.verify(mockService).addUser(Mockito.any(User.class));
     }
@@ -165,14 +167,14 @@ public class UserControllerTest {
         UserService mockService = Mockito.mock(UserService.class);
 
         User expected = Mockito.mock(User.class);
-        Mockito.when(mockService.addUser(Mockito.any(User.class))).thenThrow(new DatabaseException(new Exception()));
+        Mockito.doThrow(new DatabaseException(new Exception())).when(mockService).addUser(Mockito.any(User.class));
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
         Response response = userController.createUser(expected);
-        Object actual = response.getEntity();
+        MessageVO actual = (MessageVO)response.getEntity();
 
-        assertNull(actual);
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE, actual.getMessage());
         assertEquals(500, response.getStatus());
         Mockito.verify(mockService).addUser(Mockito.any(User.class));
     }
