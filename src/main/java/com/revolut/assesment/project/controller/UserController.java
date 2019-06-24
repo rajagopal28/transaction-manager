@@ -18,7 +18,6 @@ import java.util.List;
 @Path("/users")
 public class UserController {
     private UserService userService = new UserService();
-    private SQLiteConnectionManager connectionManager = new SQLiteConnectionManager();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
