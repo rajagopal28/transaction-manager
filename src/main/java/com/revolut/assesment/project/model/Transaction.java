@@ -4,15 +4,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Builder
 @ToString
-public class Transaction {
+@Entity
+public class Transaction implements Serializable {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Integer fromAccount;
-    private Integer toAccount;
+
+    @ManyToOne
+    private Account fromAccount;
+    @ManyToOne
+    private Account toAccount;
     private Date timeCreated;
     private double amount;
     private String currency;

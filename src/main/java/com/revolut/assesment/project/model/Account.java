@@ -5,14 +5,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @ToString
 @Builder
-public class Account {
+@Entity
+public class Account implements Serializable {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Integer userId;
+
+    @ManyToOne
+    private User user;
     private AccountType accountType;
     private String currency;
     private double balance;

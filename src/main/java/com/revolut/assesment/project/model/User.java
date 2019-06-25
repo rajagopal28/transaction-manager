@@ -2,14 +2,20 @@ package com.revolut.assesment.project.model;
 
 import lombok.*;
 
+import javax.persistence.*;
+import java.io.Serializable;
 
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @ToString
-public class User {
+public class User implements Serializable {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String firstName;
     private String lastName;
