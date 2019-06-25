@@ -38,7 +38,7 @@ public class UserDaoTest {
         Mockito.when(mockQuery.getResultList()).thenReturn(expected);
         Mockito.when(em.createQuery(Mockito.anyString())).thenReturn(mockQuery);
 
-        List<User> users = userDao.getUsers(null);
+        List<User> users = userDao.getUsers();
         assertEquals(expected, users);
         Mockito.verify(mockQuery).getResultList();
         Mockito.verify(em).createQuery(Mockito.anyString());
@@ -61,7 +61,7 @@ public class UserDaoTest {
         User expected = Mockito.mock(User.class);
         Mockito.when(em.find(Mockito.eq(User.class),Mockito.eq(mockUser))).thenReturn(expected);
 
-        User actual = userDao.getUsers(mockUser, null);
+        User actual = userDao.getUser(mockUser);
         assertEquals(expected, actual);
         Mockito.verify(em).find(Mockito.eq(User.class),Mockito.eq(mockUser));
         Mockito.verify(em).createQuery(Mockito.anyString());
@@ -83,7 +83,7 @@ public class UserDaoTest {
         Mockito.when(em.getTransaction()).thenReturn(mockTxn);
 
         User mockUser = Mockito.mock(User.class);
-        userDao.addUser(mockUser, null);
+        userDao.addUser(mockUser);
 
         Mockito.verify(em).getTransaction();
         Mockito.verify(em).persist(mockUser);

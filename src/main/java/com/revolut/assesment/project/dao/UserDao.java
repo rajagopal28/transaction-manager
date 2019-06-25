@@ -12,17 +12,17 @@ public class UserDao {
 
     private EntityManager em = Persistence.createEntityManagerFactory(ApplicationConstants.SQLITE_DB_NAME).createEntityManager();
 
-    public List<User> getUsers(Connection conn) {
+    public List<User> getUsers() {
         return em.createQuery(ApplicationConstants.SELECT_ALL_QUERY_p1+ User.class.getSimpleName() + ApplicationConstants.SELECT_ALL_QUERY_p2).getResultList();
     }
 
-    public void addUser(User user, Connection conn) {
+    public void addUser(User user) {
         em.getTransaction().begin();
         em.persist(user);
         em.getTransaction().commit();
     }
 
-    public User getUsers(User user, Connection conn) {
+    public User getUser(User user) {
         return em.find(User.class, user);
     }
 
