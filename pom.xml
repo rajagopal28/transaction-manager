@@ -33,11 +33,6 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-dbutils</groupId>
-            <artifactId>commons-dbutils</artifactId>
-            <version>${dbutils.version}</version>
-        </dependency>
 
         <!-- Hibernate & JPA -->
         <dependency>
