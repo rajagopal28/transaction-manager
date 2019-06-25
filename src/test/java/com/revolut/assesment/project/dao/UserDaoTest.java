@@ -1,200 +1,94 @@
 package com.revolut.assesment.project.dao;
 
-import com.revolut.assesment.project.exception.DatabaseException;
-import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
-import com.revolut.assesment.project.exception.NoDataUpdatedException;
-import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.persistence.*;
+import java.sql.DriverManager;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({DriverManager.class, UserDao.class})
 public class UserDaoTest {
 
     @Test
-    public void testGetAllUsers() throws Exception {
+    public void testGetAllUsers() {
+
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+        BDDMockito.given(Persistence.createEntityManagerFactory(Mockito.anyString())).willReturn(mockFactory);
+
+
         UserDao userDao = new UserDao();
 
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
+        Query mockQuery = Mockito.mock(Query.class);
 
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
+        List<User> expected = new ArrayList<>();
+        Mockito.when(mockQuery.getResultList()).thenReturn(expected);
+        Mockito.when(em.createQuery(Mockito.anyString())).thenReturn(mockQuery);
 
-
-        ArrayList<User> result = new ArrayList<>();
-        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class))).thenReturn(result);
-
-        List<User> users = userDao.getUsers(con);
-        assertEquals(result, users);
-        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class));
+        List<User> users = userDao.getUsers(null);
+        assertEquals(expected, users);
+        Mockito.verify(mockQuery).getResultList();
+        Mockito.verify(em).createQuery(Mockito.anyString());
+        Mockito.verify(mockFactory).createEntityManager();
 
     }
 
     @Test
-    public void testCreateUser() throws Exception {
+    public void testGetUser()  {
         UserDao userDao = new UserDao();
 
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
+        EntityManager em = Mockito.mock(EntityManager.class);
 
-        Mockito.when(mockQueryRunner.update(Mockito.eq(con),
-                Mockito.anyString(), Mockito.any())).thenReturn(1);
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
 
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
-
-        User mockUser = Mockito.mock(User.class);
-
-        userDao.addUser(mockUser, con);
-        Mockito.verify(mockQueryRunner).update(Mockito.eq(con), Mockito.anyString(), Mockito.any());
-    }
-
-    @Test(expected = NoDataUpdatedException.class)
-    public void testCreateUserFailure() throws Exception {
-        UserDao userDao = new UserDao();
-
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
-
-        Mockito.when(mockQueryRunner.update(Mockito.eq(con),
-                Mockito.anyString(), Mockito.any())).thenReturn(0);
-
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
+        BDDMockito.given(Persistence.createEntityManagerFactory(Mockito.anyString())).willReturn(mockFactory);
 
         User mockUser = Mockito.mock(User.class);
+        User expected = Mockito.mock(User.class);
+        Mockito.when(em.find(Mockito.eq(User.class),Mockito.eq(mockUser))).thenReturn(expected);
 
-        userDao.addUser(mockUser, con);
-        Mockito.verify(mockQueryRunner).update(Mockito.eq(con), Mockito.anyString(), Mockito.any());
+        User actual = userDao.getUsers(mockUser, null);
+        assertEquals(expected, actual);
+        Mockito.verify(em).find(Mockito.eq(User.class),Mockito.eq(mockUser));
+        Mockito.verify(em).createQuery(Mockito.anyString());
+        Mockito.verify(mockFactory).createEntityManager();
     }
 
     @Test
-    public void testGetUser() throws Exception {
+    public void testCreateUser() {
         UserDao userDao = new UserDao();
 
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
+        EntityManager em = Mockito.mock(EntityManager.class);
 
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
 
+        BDDMockito.given(Persistence.createEntityManagerFactory(Mockito.anyString())).willReturn(mockFactory);
 
-        User result = Mockito.mock(User.class);
-        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class))).thenReturn(Arrays.asList(result));
-
-        User user = userDao.getUser(User.builder().build(), con);
-        assertEquals(result, user);
-        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class));
-
-    }
-
-    @Test
-    public void testGetUsersWithCondition() throws Exception {
-        UserDao userDao = new UserDao();
-
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
-
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
-
-
-        List<User> result = Arrays.asList(Mockito.mock(User.class));
-        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class))).thenReturn(result);
-
-        List<User> users = userDao.getUsers(User.builder().build(), con);
-        assertEquals(result, users);
-        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class));
-
-    }
-
-    @Test(expected = NoRecordsFoundException.class)
-    public void testGetUserWithNoResultsException() throws Exception {
-        UserDao userDao = new UserDao();
-
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
-
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
-
-
-        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class))).thenReturn(Arrays.asList());
-
-        userDao.getUser(User.builder().build(), con);
-        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class));
-
-    }
-
-    @Test(expected = MoreThanOneRecordFoundException.class)
-    public void testGetUserWithMoreResultsException() throws Exception {
-        UserDao userDao = new UserDao();
-
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
-
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
-
-        User u1 = Mockito.mock(User.class);
-        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class))).thenReturn(Arrays.asList(u1, u1));
-
-        userDao.getUser(User.builder().build(), con);
-        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class));
-
-    }
-
-    @Test(expected = DatabaseException.class)
-    public void testGetUserWithDBException() throws Exception {
-        UserDao userDao = new UserDao();
-
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
-
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
-
-        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class))).thenThrow(new SQLException());
-
-        userDao.getUser(User.builder().build(), con);
-        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class));
-
-    }
-
-    @Test(expected = DatabaseException.class)
-    public void testGetUsersWithDBException() throws Exception {
-        UserDao userDao = new UserDao();
-
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
-
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
-
-        Mockito.when(mockQueryRunner.query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class))).thenThrow(new SQLException());
-
-        userDao.getUsers(User.builder().build(), con);
-        Mockito.verify(mockQueryRunner).query(Mockito.eq(con), Mockito.anyString(), Mockito.any(ResultSetHandler.class), Mockito.any(Object[].class));
-
-    }
-
-    @Test(expected = DatabaseException.class)
-    public void testCreateUserWithDBException() throws Exception {
-        UserDao userDao = new UserDao();
-
-        QueryRunner mockQueryRunner = Mockito.mock(QueryRunner.class);
-        Connection con = Mockito.mock(Connection.class);
-
-        Mockito.when(mockQueryRunner.update(Mockito.eq(con),
-                Mockito.anyString(), Mockito.any())).thenThrow(new SQLException());
-
-        FieldSetter.setField(userDao, UserDao.class.getDeclaredField("queryRunner"), mockQueryRunner);
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
 
         User mockUser = Mockito.mock(User.class);
+        userDao.addUser(mockUser, null);
 
-        userDao.addUser(mockUser, con);
+        Mockito.verify(em).getTransaction();
+        Mockito.verify(em).persist(mockUser);
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
     }
 
 }
