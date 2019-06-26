@@ -16,10 +16,11 @@ import java.util.Date;
 public class Account implements Serializable {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String accountNumber;
+
     @ManyToOne
     private User user;
     private AccountType accountType;
