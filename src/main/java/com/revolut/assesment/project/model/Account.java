@@ -1,9 +1,7 @@
 package com.revolut.assesment.project.model;
 
 import com.revolut.assesment.project.constants.ApplicationConstants.AccountType;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,6 +11,8 @@ import java.util.Date;
 @ToString
 @Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Account implements Serializable {
     @Id
     @Column(name = "id")

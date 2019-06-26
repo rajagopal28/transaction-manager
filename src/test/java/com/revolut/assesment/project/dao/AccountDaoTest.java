@@ -38,13 +38,11 @@ public class AccountDaoTest {
 
         Account mockAccount = Mockito.mock(Account.class);
 
-        User user = User.builder().id(2).build();
-        accountDao.addAccount(user, mockAccount);
+        accountDao.addAccount(mockAccount);
 
         Mockito.verify(em, Mockito.times(2)).getTransaction();
         Mockito.verify(em).persist(mockAccount);
         Mockito.verify(mockTxn).begin();
-        Mockito.verify(mockAccount).setUser(user);
         Mockito.verify(mockTxn).commit();
     }
 

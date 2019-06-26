@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.sql.Date;
 import java.util.List;
 
 public class AccountDao {
@@ -31,9 +32,8 @@ public class AccountDao {
         return tQuery.getResultList();
     }
 
-    public void addAccount(User user, Account account) {
+    public void addAccount(Account account) {
         em.getTransaction().begin();
-        account.setUser(user);
         em.persist(account);
         em.getTransaction().commit();
     }
