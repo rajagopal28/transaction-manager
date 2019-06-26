@@ -7,12 +7,18 @@ public interface ApplicationConstants {
         CREDIT
     }
 
+    enum TransactionType {
+        CASH_DEPOSIT,
+        CHEQUE_DEPOSIT,
+        TRANSFER
+    }
+
     String SQLITE_DB_NAME = "transactions-db";
 
     String SELECT_ALL_QUERY_p1 = "SELECT T from ";
     String SELECT_ALL_QUERY_p2 = " T ";
 
-    String SELECT_ALL_QUERY_p3 = " WHERE ";
+
 
     String RESPONSE_ERROR_DATABAS_ISSUE = "Error accessing database!";
     String RESPONSE_ERROR_RECORD_NOT_CREATED = "Record Creation Failed!";

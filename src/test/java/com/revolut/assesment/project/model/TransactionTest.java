@@ -1,5 +1,6 @@
 package com.revolut.assesment.project.model;
 
+import com.revolut.assesment.project.constants.ApplicationConstants;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -21,6 +22,7 @@ public class TransactionTest {
                 .amount(23.00)
                 .currency(currency)
                 .timeCreated(timeCreated)
+                .transactionType(ApplicationConstants.TransactionType.TRANSFER)
                 .id(100)
                 .build();
         assertNotNull(transaction);

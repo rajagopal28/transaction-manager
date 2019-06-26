@@ -1,8 +1,7 @@
 package com.revolut.assesment.project.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import com.revolut.assesment.project.constants.ApplicationConstants;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +11,8 @@ import java.util.Date;
 @Builder
 @ToString
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Transaction implements Serializable {
     @Id
     @Column(name = "id")
@@ -25,4 +26,5 @@ public class Transaction implements Serializable {
     private Date timeCreated;
     private double amount;
     private String currency;
+    private ApplicationConstants.TransactionType transactionType;
 }
