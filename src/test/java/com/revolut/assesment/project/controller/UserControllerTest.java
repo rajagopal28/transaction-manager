@@ -8,10 +8,8 @@ import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
 import com.revolut.assesment.project.vo.MessageVO;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.powermock.api.mockito.PowerMockito;
@@ -84,7 +82,7 @@ public class UserControllerTest {
         UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
-        Mockito.when(mockService.getUser(Mockito.any(User.class))).thenReturn(expected);
+        Mockito.when(mockService.getUser(Mockito.any(Integer.class))).thenReturn(expected);
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
@@ -93,7 +91,7 @@ public class UserControllerTest {
 
         assertEquals(expected, actual);
         assertEquals(200, response.getStatus());
-        Mockito.verify(mockService).getUser(Mockito.any(User.class));
+        Mockito.verify(mockService).getUser(Mockito.any(Integer.class));
     }
 
     @Test
@@ -104,7 +102,7 @@ public class UserControllerTest {
         UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
-        Mockito.when(mockService.getUser(Mockito.any(User.class))).thenThrow(new NoRecordsFoundException());
+        Mockito.when(mockService.getUser(Mockito.any(Integer.class))).thenThrow(new NoRecordsFoundException());
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
@@ -113,7 +111,7 @@ public class UserControllerTest {
 
         assertEquals(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER, actual.getMessage());
         assertEquals(404, response.getStatus());
-        Mockito.verify(mockService).getUser(Mockito.any(User.class));
+        Mockito.verify(mockService).getUser(Mockito.any(Integer.class));
     }
 
     @Test
@@ -124,7 +122,7 @@ public class UserControllerTest {
         UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
-        Mockito.when(mockService.getUser(Mockito.any(User.class))).thenThrow(new DatabaseException(new Exception()));
+        Mockito.when(mockService.getUser(Mockito.any(Integer.class))).thenThrow(new DatabaseException(new Exception()));
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
@@ -133,7 +131,7 @@ public class UserControllerTest {
 
         assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE, actual.getMessage());
         assertEquals(500, response.getStatus());
-        Mockito.verify(mockService).getUser(Mockito.any(User.class));
+        Mockito.verify(mockService).getUser(Mockito.any(Integer.class));
     }
 
     @Test

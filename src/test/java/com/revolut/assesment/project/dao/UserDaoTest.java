@@ -3,7 +3,6 @@ package com.revolut.assesment.project.dao;
 import com.revolut.assesment.project.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -61,7 +60,7 @@ public class UserDaoTest {
 
         UserDao userDao = new UserDao();
 
-        User mockUser = Mockito.mock(User.class);
+        Integer mockUser = 10;
         User expected = Mockito.mock(User.class);
         Mockito.when(em.find(Mockito.eq(User.class),Mockito.eq(mockUser))).thenReturn(expected);
 

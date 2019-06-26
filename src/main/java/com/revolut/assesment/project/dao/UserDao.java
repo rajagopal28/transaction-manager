@@ -7,11 +7,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import java.util.List;
 
-public class UserDao {
 
+public class UserDao {
     private EntityManager em;
 
     public UserDao() {
+        System.out.println("Iniitalizing em....");
         em = Persistence.createEntityManagerFactory(ApplicationConstants.SQLITE_DB_NAME).createEntityManager();
     }
 
@@ -25,8 +26,8 @@ public class UserDao {
         em.getTransaction().commit();
     }
 
-    public User getUser(User user) {
-        return em.find(User.class, user);
+    public User getUser(Integer id) {
+        return em.find(User.class, id);
     }
 
 

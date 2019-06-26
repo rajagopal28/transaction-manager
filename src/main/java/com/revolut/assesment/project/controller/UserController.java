@@ -16,6 +16,7 @@ import java.util.List;
 
 @Path("/users")
 public class UserController {
+
     UserDao userService = new UserDao();
 
     @GET
@@ -51,7 +52,7 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("id") Integer id) {
         try {
-            User result = userService.getUser(User.builder().id(id).build());
+            User result = userService.getUser(id);
             return Response.status(200).entity(result).build();
         } catch (DatabaseException de) {
             de.printStackTrace();

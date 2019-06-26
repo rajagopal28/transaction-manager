@@ -3,17 +3,20 @@
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 			 version="2.0">
-	<persistence-unit name="usersdb" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="transactions-db" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>com.revolut.assesment.project.model.Person</class>
+		<class>com.revolut.assesment.project.model.User</class>
+		<class>com.revolut.assesment.project.model.Transaction</class>
+		<class>com.revolut.assesment.project.model.Account</class>
 		<properties>
 			<property name="hibernate.dialect" value="com.revolut.assesment.project.dao.util.SQLiteDialect"/>
-			<property name="hibernate.hbm2ddl.auto" value="create"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
 			<property name="hibernate.show_sql" value="true"/>
 			<property name="hibernate.format_sql" value="false"/>
 
 			<property name="javax.persistence.jdbc.driver" value="org.sqlite.JDBC"/>
 			<property name="javax.persistence.jdbc.url" value="jdbc:sqlite:transactions.db"/>
+			<property name="hibernate.bytecode.provider" value="cglib" />
 
 		</properties>
 	</persistence-unit>
