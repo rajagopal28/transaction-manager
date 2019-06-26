@@ -7,10 +7,7 @@ import com.revolut.assesment.project.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 public class AccountDao {
@@ -20,23 +17,23 @@ public class AccountDao {
         em = Persistence.createEntityManagerFactory(ApplicationConstants.SQLITE_DB_NAME).createEntityManager();
     }
 
-    public List<Account> getAccounts(Integer userId) {
+    public List<Account> getAccounts(User user) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
         CriteriaQuery<Account> query = cb.createQuery(Account.class);
         Root<Account> sm = query.from(Account.class);
 
-        ParameterExpression<Integer> p = cb.parameter(Integer.class);
-        query = query.select(sm).where(cb.equal(sm.get("user_id"), p));
+        ParameterExpression<User> p = cb.parameter(User.class);
+        query = query.select(sm).where(cb.equal(sm.get("user"), p));
 
         TypedQuery<Account> tQuery = em.createQuery(query);
-        tQuery.setParameter(p, userId);
+        tQuery.setParameter(p, user);
         return tQuery.getResultList();
     }
 
     public void addAccount(User user, Account account) {
         em.getTransaction().begin();
-        account.setUser(em.find(User.class, user.getId()));
+        account.setUser(user);
         em.persist(account);
         em.getTransaction().commit();
     }

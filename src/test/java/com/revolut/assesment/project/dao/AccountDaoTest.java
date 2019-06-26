@@ -4,7 +4,6 @@ import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -37,9 +36,7 @@ public class AccountDaoTest {
         EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
         Mockito.when(em.getTransaction()).thenReturn(mockTxn);
 
-        User mockUser = Mockito.mock(User.class);
         Account mockAccount = Mockito.mock(Account.class);
-        Mockito.when(em.find(Mockito.eq(User.class), Mockito.eq(2))).thenReturn(mockUser);
 
         User user = User.builder().id(2).build();
         accountDao.addAccount(user, mockAccount);
@@ -47,7 +44,7 @@ public class AccountDaoTest {
         Mockito.verify(em, Mockito.times(2)).getTransaction();
         Mockito.verify(em).persist(mockAccount);
         Mockito.verify(mockTxn).begin();
-        Mockito.verify(mockAccount).setUser(mockUser);
+        Mockito.verify(mockAccount).setUser(user);
         Mockito.verify(mockTxn).commit();
     }
 
@@ -62,9 +59,14 @@ public class AccountDaoTest {
         PowerMockito.mockStatic(Persistence.class);
         PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
 
+        int userId = 3;
+        User mockUser = Mockito.mock(User.class);
+        Mockito.when(em.find(Mockito.eq(User.class), Mockito.eq(userId))).thenReturn(mockUser);
+
+
         AccountDao accountDao = new AccountDao();
         TypedQuery<Account> typedQuery = Mockito.mock(TypedQuery.class);
-        ParameterExpression<Integer> p = Mockito.mock(ParameterExpression.class);
+        ParameterExpression<User> p = Mockito.mock(ParameterExpression.class);
         Root<Account> sm = Mockito.mock(Root.class);
         CriteriaQuery<Account> query = Mockito.mock(CriteriaQuery.class);
         CriteriaBuilder cb = Mockito.mock(CriteriaBuilder.class);
@@ -78,7 +80,7 @@ public class AccountDaoTest {
 
         Mockito.when(sm.get(Mockito.anyString())).thenReturn(pa);
 
-        Mockito.when(cb.parameter(Mockito.eq(Integer.class))).thenReturn(p);
+        Mockito.when(cb.parameter(Mockito.eq(User.class))).thenReturn(p);
         Mockito.when(cb.equal(Mockito.eq(pa), Mockito.eq(p))).thenReturn(pr);
 
         Mockito.when(query.select(Mockito.eq(sm))).thenReturn(query);
@@ -91,7 +93,7 @@ public class AccountDaoTest {
 
         Mockito.when(em.getCriteriaBuilder()).thenReturn(cb);
 
-        List<Account> accounts = accountDao.getAccounts(3);
+        List<Account> accounts = accountDao.getAccounts(mockUser);
 
         assertEquals(expected, accounts);
         Mockito.verify(em).createQuery(Mockito.eq(query));
