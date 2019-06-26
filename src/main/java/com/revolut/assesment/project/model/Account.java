@@ -19,6 +19,7 @@ public class Account implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    private String accountNumber;
     @ManyToOne
     private User user;
     private AccountType accountType;
