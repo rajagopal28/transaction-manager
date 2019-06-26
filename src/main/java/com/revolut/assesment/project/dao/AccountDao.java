@@ -38,4 +38,8 @@ public class AccountDao {
         em.getTransaction().commit();
     }
 
+    public Account getAccount(Integer accountId) {
+        return em.find(Account.class, accountId);
+    }
+
 }

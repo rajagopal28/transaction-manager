@@ -11,11 +11,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Persistence.class, AccountDao.class})
@@ -57,10 +56,7 @@ public class AccountDaoTest {
         PowerMockito.mockStatic(Persistence.class);
         PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
 
-        int userId = 3;
         User mockUser = Mockito.mock(User.class);
-        Mockito.when(em.find(Mockito.eq(User.class), Mockito.eq(userId))).thenReturn(mockUser);
-
 
         AccountDao accountDao = new AccountDao();
         TypedQuery<Account> typedQuery = Mockito.mock(TypedQuery.class);
@@ -104,6 +100,30 @@ public class AccountDaoTest {
         Mockito.verify(query).where(Mockito.any(Expression.class));
         Mockito.verify(query).from(Mockito.eq(Account.class));
 
+    }
+
+
+    @Test
+    public void testGetAccount() throws Exception {
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        AccountDao accountDao = new AccountDao();
+
+        Integer accountId = 10;
+        Account expected = Mockito.mock(Account.class);
+        Mockito.when(em.find(Mockito.eq(Account.class),Mockito.eq(accountId))).thenReturn(expected);
+
+        Account actual = accountDao.getAccount(accountId);
+        assertEquals(expected, actual);
+        Mockito.verify(em).find(Mockito.eq(Account.class),Mockito.eq(accountId));
+        Mockito.verify(mockFactory).createEntityManager();
     }
 
 
