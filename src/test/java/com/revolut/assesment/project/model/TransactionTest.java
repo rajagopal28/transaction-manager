@@ -1,6 +1,7 @@
 package com.revolut.assesment.project.model;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Date;
 
@@ -12,9 +13,11 @@ public class TransactionTest {
     public void testTransactionBuilder() {
         Date timeCreated = new Date();
         String currency = "INR";
+        Account fromAccount = Mockito.mock(Account.class);
+        Account toAccount = Mockito.mock(Account.class);
         Transaction transaction = Transaction.builder()
-                .fromAccount(101)
-                .toAccount(202)
+                .fromAccount(fromAccount)
+                .toAccount(toAccount)
                 .amount(23.00)
                 .currency(currency)
                 .timeCreated(timeCreated)
@@ -22,8 +25,8 @@ public class TransactionTest {
                 .build();
         assertNotNull(transaction);
         assertEquals(100, transaction.getId().intValue());
-        assertEquals(101, transaction.getFromAccount().intValue());
-        assertEquals(202, transaction.getToAccount().intValue());
+        assertEquals(fromAccount, transaction.getFromAccount());
+        assertEquals(toAccount, transaction.getToAccount());
         assertEquals(timeCreated, transaction.getTimeCreated());
         assertEquals(currency, transaction.getCurrency());
         assertEquals(23.00, transaction.getAmount(), 0.001);
