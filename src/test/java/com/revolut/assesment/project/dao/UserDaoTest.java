@@ -32,16 +32,16 @@ public class UserDaoTest {
 
         UserDao userDao = new UserDao();
 
-        Query mockQuery = Mockito.mock(Query.class);
+        TypedQuery mockQuery = Mockito.mock(TypedQuery.class);
 
         List<User> expected = new ArrayList<>();
         Mockito.when(mockQuery.getResultList()).thenReturn(expected);
-        Mockito.when(em.createQuery(Mockito.anyString())).thenReturn(mockQuery);
+        Mockito.when(em.createQuery(Mockito.anyString(), Mockito.eq(User.class))).thenReturn(mockQuery);
 
         List<User> users = userDao.getUsers();
         assertEquals(expected, users);
         Mockito.verify(mockQuery).getResultList();
-        Mockito.verify(em).createQuery(Mockito.anyString());
+        Mockito.verify(em).createQuery(Mockito.anyString(), Mockito.eq(User.class));
         Mockito.verify(mockFactory).createEntityManager();
 
     }
