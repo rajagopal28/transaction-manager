@@ -5,30 +5,31 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.persistence.*;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({DriverManager.class, UserDao.class})
+@PrepareForTest({Persistence.class, UserDao.class})
 public class UserDaoTest {
 
     @Test
-    public void testGetAllUsers() {
+    public void testGetAllUsers() throws Exception {
 
         EntityManager em = Mockito.mock(EntityManager.class);
 
         EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
         Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
 
-        BDDMockito.given(Persistence.createEntityManagerFactory(Mockito.anyString())).willReturn(mockFactory);
 
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
 
         UserDao userDao = new UserDao();
 
@@ -47,15 +48,18 @@ public class UserDaoTest {
     }
 
     @Test
-    public void testGetUser()  {
-        UserDao userDao = new UserDao();
+    public void testGetUser() throws Exception {
 
         EntityManager em = Mockito.mock(EntityManager.class);
 
         EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
         Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
 
-        BDDMockito.given(Persistence.createEntityManagerFactory(Mockito.anyString())).willReturn(mockFactory);
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        UserDao userDao = new UserDao();
 
         User mockUser = Mockito.mock(User.class);
         User expected = Mockito.mock(User.class);
@@ -64,28 +68,28 @@ public class UserDaoTest {
         User actual = userDao.getUser(mockUser);
         assertEquals(expected, actual);
         Mockito.verify(em).find(Mockito.eq(User.class),Mockito.eq(mockUser));
-        Mockito.verify(em).createQuery(Mockito.anyString());
         Mockito.verify(mockFactory).createEntityManager();
     }
 
     @Test
-    public void testCreateUser() {
-        UserDao userDao = new UserDao();
-
+    public void testCreateUser() throws Exception {
         EntityManager em = Mockito.mock(EntityManager.class);
 
         EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
         Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
 
-        BDDMockito.given(Persistence.createEntityManagerFactory(Mockito.anyString())).willReturn(mockFactory);
 
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        UserDao userDao = new UserDao();
         EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
         Mockito.when(em.getTransaction()).thenReturn(mockTxn);
 
         User mockUser = Mockito.mock(User.class);
         userDao.addUser(mockUser);
 
-        Mockito.verify(em).getTransaction();
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
         Mockito.verify(em).persist(mockUser);
         Mockito.verify(mockTxn).begin();
         Mockito.verify(mockTxn).commit();
