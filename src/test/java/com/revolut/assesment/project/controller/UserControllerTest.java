@@ -1,30 +1,48 @@
 package com.revolut.assesment.project.controller;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
+import com.revolut.assesment.project.dao.UserDao;
 import com.revolut.assesment.project.exception.DatabaseException;
 import com.revolut.assesment.project.exception.NoDataUpdatedException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
-import com.revolut.assesment.project.service.UserService;
 import com.revolut.assesment.project.vo.MessageVO;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({Persistence.class, UserDao.class, UserController.class})
 public class UserControllerTest {
 
+    @Before
+    public void setupPersistenceMock() throws Exception {
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+    }
     @Test
     public void testGetUsers() throws Exception {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         List<User> expected = Arrays.asList(Mockito.mock(User.class));
         Mockito.when(mockService.getUsers()).thenReturn(expected);
@@ -44,7 +62,7 @@ public class UserControllerTest {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         Mockito.when(mockService.getUsers()).thenThrow(new DatabaseException(new Exception()));
 
@@ -63,7 +81,7 @@ public class UserControllerTest {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
         Mockito.when(mockService.getUser(Mockito.any(User.class))).thenReturn(expected);
@@ -83,7 +101,7 @@ public class UserControllerTest {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
         Mockito.when(mockService.getUser(Mockito.any(User.class))).thenThrow(new NoRecordsFoundException());
@@ -103,7 +121,7 @@ public class UserControllerTest {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
         Mockito.when(mockService.getUser(Mockito.any(User.class))).thenThrow(new DatabaseException(new Exception()));
@@ -123,7 +141,7 @@ public class UserControllerTest {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
 
@@ -143,7 +161,7 @@ public class UserControllerTest {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         User mock = Mockito.mock(User.class);
 
@@ -164,7 +182,7 @@ public class UserControllerTest {
 
         UserController userController = new UserController();
 
-        UserService mockService = Mockito.mock(UserService.class);
+        UserDao mockService = Mockito.mock(UserDao.class);
 
         User expected = Mockito.mock(User.class);
         Mockito.doThrow(new DatabaseException(new Exception())).when(mockService).addUser(Mockito.any(User.class));

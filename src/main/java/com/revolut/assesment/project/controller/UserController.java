@@ -1,13 +1,12 @@
 package com.revolut.assesment.project.controller;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
-import com.revolut.assesment.project.dao.util.SQLiteConnectionManager;
+import com.revolut.assesment.project.dao.UserDao;
 import com.revolut.assesment.project.exception.DatabaseException;
 import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
 import com.revolut.assesment.project.exception.NoDataUpdatedException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
-import com.revolut.assesment.project.service.UserService;
 import com.revolut.assesment.project.vo.MessageVO;
 
 import javax.ws.rs.*;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @Path("/users")
 public class UserController {
-    private UserService userService = new UserService();
+    UserDao userService = new UserDao();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
