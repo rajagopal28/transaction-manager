@@ -13,6 +13,7 @@ import java.util.Date;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "TransactionD")
 public class Transaction implements Serializable {
     @Id
     @Column(name = "id")
