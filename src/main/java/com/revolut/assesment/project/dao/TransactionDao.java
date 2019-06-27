@@ -72,15 +72,15 @@ public class TransactionDao {
         em.getTransaction().begin();
         Account fromAccount = em.find(Account.class, transactionVO.getFromAccountId());
         Account toAccount = em.find(Account.class, transactionVO.getToAccountId());
-        if(transactionVO.getAmount() > fromAccount.getBalance()) {
-            em.getTransaction().commit();
-            throw new InsufficientBalanceException();
-        }
 
         if(!fromAccount.getCurrency().equalsIgnoreCase(toAccount.getCurrency())
                 || !fromAccount.getCurrency().equalsIgnoreCase(transactionVO.getCurrency())) {
             em.getTransaction().commit();
             throw new CurrencyConversionNotSupportedException();
+        }
+        if(transactionVO.getAmount() > fromAccount.getBalance()) {
+            em.getTransaction().commit();
+            throw new InsufficientBalanceException();
         }
         transaction.setTimeCreated(new Date(System.currentTimeMillis()));
         transaction.setFromAccount(fromAccount);

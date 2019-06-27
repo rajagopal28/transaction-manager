@@ -215,7 +215,7 @@ public class TransactionDaoTest {
         PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
 
 
-        Account fromAccount = Account.builder().balance(15.00).currency("USD").build();
+        Account fromAccount = Account.builder().balance(11.00).currency("USD").build();
         Account toAccount = Account.builder().balance(4.00).currency("INR").build();
         TransactionDao transactionDao = new TransactionDao();
         EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
