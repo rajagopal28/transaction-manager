@@ -13,7 +13,6 @@ Following are the primary objectives this project is based on
 Based on the aforementioned objectives the system that is being built has been built based on the following approach:
 - Using Jersey-Server library to create a JAX-RS reliant REST API server which can run as a self contained, embedded server that can be started and stopped from a simple Java application.
 - Using Mockito and Powemocktio frameworks the entire implementation is developed following the TDD strategy where fail tests -> refactor -> pass tests cycle was strictly carried on.
-![TDD Diagram](red-green-refactor.png)
 - JAX-RS application are simple, fast, reliable at the same time scaled based on the underlying data access implementations
 - SQLite datastore is used to store the data without involving any sever runtime or containers to actively engage with data connections.
 - Hibernate-JPA library is used to leverage the advantages javax.persistence library which helps in efficient, simple and scaled database access approaches.
@@ -21,6 +20,9 @@ Based on the aforementioned objectives the system that is being built has been b
 
 ## Schema
 ![Schema Diagram](transaction-manager-schema.png)
+
+## TDD - Red->Green->Refactor
+![TDD Diagram](red-green-refactor.png)
 
 
 ## References
