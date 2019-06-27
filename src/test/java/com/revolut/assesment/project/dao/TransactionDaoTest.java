@@ -108,7 +108,7 @@ public class TransactionDaoTest {
     }
 
     @Test
-    public void testGetTransaction() throws Exception {
+    public void testGetTransactions() throws Exception {
         EntityManager em = Mockito.mock(EntityManager.class);
 
         EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
@@ -239,5 +239,28 @@ public class TransactionDaoTest {
         Mockito.verify(em, Mockito.times(2)).getTransaction();
         Mockito.verify(mockTxn).begin();
         Mockito.verify(mockTxn).commit();
+    }
+
+    @Test
+    public void testGetTransaction() throws Exception {
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        TransactionDao transactionDao = new TransactionDao();
+
+        Integer txnId = 10;
+        Transaction expected = Mockito.mock(Transaction.class);
+        Mockito.when(em.find(Mockito.eq(Transaction.class),Mockito.eq(txnId))).thenReturn(expected);
+
+        Transaction actual = transactionDao.getTransaction(txnId);
+        assertEquals(expected, actual);
+        Mockito.verify(em).find(Mockito.eq(Transaction.class),Mockito.eq(txnId));
+        Mockito.verify(mockFactory).createEntityManager();
     }
 }

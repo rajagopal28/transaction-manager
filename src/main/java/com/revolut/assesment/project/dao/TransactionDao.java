@@ -94,5 +94,9 @@ public class TransactionDao {
         return transaction;
     }
 
+    public Transaction getTransaction(Integer transactionId) {
+        return em.find(Transaction.class, transactionId);
+    }
+
 
 }
