@@ -25,6 +25,10 @@ Based on the aforementioned objectives the system that is being built has been b
 ![TDD Diagram](red-green-refactor.png)
 
 
+## API System flow
+![Flow Diagram](api-system-flow.png)
+
+
 ## References
 - https://dzone.com/articles/lightweight-embedded-java-rest-server-without-a-fr
 - https://dzone.com/articles/how-i-test-my-java-classes-for-thread-safety
