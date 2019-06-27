@@ -69,7 +69,7 @@ public class UserControllerTest {
         Response response = userController.getAllUsers();
         MessageVO actual = (MessageVO)response.getEntity();
 
-        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE, actual.getMessage());
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE, actual.getMessage());
         assertEquals(500, response.getStatus());
         Mockito.verify(mockService).getUsers();
     }
@@ -129,7 +129,7 @@ public class UserControllerTest {
         Response response = userController.getUser(123);
         MessageVO actual = (MessageVO)response.getEntity();
 
-        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE, actual.getMessage());
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE, actual.getMessage());
         assertEquals(500, response.getStatus());
         Mockito.verify(mockService).getUser(Mockito.any(Integer.class));
     }
@@ -190,7 +190,7 @@ public class UserControllerTest {
         Response response = userController.createUser(expected);
         MessageVO actual = (MessageVO)response.getEntity();
 
-        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE, actual.getMessage());
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE, actual.getMessage());
         assertEquals(500, response.getStatus());
         Mockito.verify(mockService).addUser(Mockito.any(User.class));
     }

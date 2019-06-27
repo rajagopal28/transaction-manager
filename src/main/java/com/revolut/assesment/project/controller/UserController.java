@@ -27,7 +27,7 @@ public class UserController {
            return Response.status(200).entity(users).build();
        } catch (DatabaseException de) {
            de.printStackTrace();
-           return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE).build()).build();
+           return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE).build()).build();
        }
     }
 
@@ -43,7 +43,7 @@ public class UserController {
             return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED).build()).build();
         } catch(DatabaseException de) {
             de.printStackTrace();
-            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE).build()).build();
+            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE).build()).build();
         }
     }
 
@@ -56,7 +56,7 @@ public class UserController {
             return Response.status(200).entity(result).build();
         } catch (DatabaseException de) {
             de.printStackTrace();
-            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABAS_ISSUE).build()).build();
+            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE).build()).build();
         } catch (MoreThanOneRecordFoundException | NoRecordsFoundException nre) {
             nre.printStackTrace();
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
