@@ -6,7 +6,7 @@
 * [Schema](#schema)
 * [API System](#api-system-flow)
 * [API Flows](#api-flows)
-* [TDD - Red->Green->Refactor cycle](#tdd---red->green->refactor-cycle:)
+* [TDD-Red->Green->Refactor cycle](#tdd---red->green->refactor-cycle)
 * [Setup](#setup-and-launch)
 * [Libraries Used](#libraries-used)
 * [Challenges](#challenges)
@@ -40,12 +40,17 @@ Based on the aforementioned objectives the system that is being built has been b
 
 
 ## API Flows
-- GET /api/alerts  - to list all active alerts
-- POST /api/alerts {delay: .., description: .., reference_id: ..} - to post an alert with the given delay
-- PUT /api/alert/<reference_id> - to revoke the alert with given reference_id
+| Endpoint\HTTP METHOD | POST            | GET       |
+| ----------- | --------------- | --------- |
+| CRUD OP                               | CREATE                                | READ                                                              | 
+| /users                                | Create new User                       | List existing users                                               |
+| /users/1                              | --                                    | Show Existing user                                                |
+| /users/1/accounts                     | Create an account for user1           | List All Accounts of user 1                                       |
+| /users/1/accounts/1                   | --                                    | Show Existing User's Chosen Account                               |
+| /users/1/accounts/1/transactions      | Post a transaction to the given account - payload varies           | Show Selected Account transactions   |
+| /users/1/accounts/1/transactions/1    | --                                    | Show Chosen Transaction detail                                    |
 
-
-## TDD - Red->Green->Refactor cycle:
+## TDD - Red->Green->Refactor cycle
 ![TDD Diagram](red-green-refactor.png)
 
 ## Setup and launch
@@ -77,6 +82,14 @@ Following are the Libraries that are used as part of source and test cycles
 
 
 ## Challenges
+- Had a lot of challenges in setting up environment first with maven as there was a certificate issue that was messing with my maven commands due to network provider issues
+- Had difficulty in choosing the embedded server library as the prime objective was to keep the application light weight
+- Initially started with H2 in-memory DB and found out the hard way that it cannot be alive without a server/container or a EJB environment like JBoss.
+- Face quite a lot of difficulties when trying to adapt the JAX-RS framework over the jetty-server library provided by sun.net and not glassfish
+- Chose SQLite as it was serving the purpose and lightweight but I had to write a lot of initially as I was not able to find any ORM support like JPA adapting to JAX-RS and embedded server format.
+- But after spending a lot of time researching I have found a way to make JPA from hibernate support SQLite which let me throw away all my code involving explicit connection handling.
+- Had issues trying to setup integration tests, tried glassfish-jersey-client and faced a lot of dependency mismatch issues but finally found the restassured.io that helped me adapt to the sun.net jersey-client library.
+
 
 ## References
 - Jersey-Server based Embedded Server supporting JAX-RS: https://dzone.com/articles/lightweight-embedded-java-rest-server-without-a-fr
