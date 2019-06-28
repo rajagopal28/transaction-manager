@@ -68,6 +68,20 @@ Following are the response status codes that are sent as part of the system
 | /users/1/accounts/1/transactions      | 200, 400, 404, 500      |
 | /users/1/accounts/1/transactions/1    | 200, 304, 400, 404, 500,|
 
+### Error handling
+All the internal errors including runtime errors are handled at controller and sent as a valid response to user following is an example
+```bash
+curl -d '{"accountNumber" : "2321342SFDS12","accountType" : "SAVINGS","currency" : "USD","balance" : 123.456}' -H "Content-Type: application/json" -X POST http://localhost:8080/users/1/accounts
+```
+``
+HTTP STATUS: 304
+``
+```javascript
+{
+    "message": "Record Creation Failed!"
+}
+```
+
 
 ## TDD - Red->Green->Refactor cycle
 ![TDD Diagram](red-green-refactor.png)

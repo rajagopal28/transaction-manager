@@ -40,7 +40,7 @@ public class AccountController {
             accountDao.addAccount(account);
             return Response.status(201).entity(account).build();
         } catch (NoDataUpdatedException nde) {
-            nde.printStackTrace();;
+            nde.printStackTrace();
             return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED).build()).build();
         } catch(Exception de) {
             de.printStackTrace();
