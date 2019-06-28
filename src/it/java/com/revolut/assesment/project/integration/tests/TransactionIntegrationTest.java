@@ -129,7 +129,7 @@ public class TransactionIntegrationTest {
 
 
     @Test
-    public void testCreateAccountResponse() throws Exception {
+    public void testPerformDepositTransaction() throws Exception {
         User user = User.builder().city("city1")
                 .firstName("firstName1")
                 .lastName("lastName1")
@@ -166,6 +166,67 @@ public class TransactionIntegrationTest {
 
         transaction.setId(id);
         deleteAllTransactionsInAccountAndUser(transactions, account, user);
+    }
+
+    @Test
+    public void testPerformSameAccountTransfer() throws Exception {
+        User user = User.builder().city("city1")
+                .firstName("firstName1")
+                .lastName("lastName1")
+                .email("email1")
+                .phoneNumber("phoneNumber1")
+                .dob("23/12/1990")
+                .gender("Female")
+                .build();
+        Account account = Account.builder()
+                .accountNumber("accountNumber2")
+                .accountType(ApplicationConstants.AccountType.SAVINGS)
+                .balance(1012.00)
+                .currency("GBP")
+                .timeCreated(System.currentTimeMillis())
+                .build();
+
+
+        User user2 = User.builder().city("city2")
+                .firstName("firstName2")
+                .lastName("lastName2")
+                .email("email2")
+                .phoneNumber("phoneNumber2")
+                .dob("2/12/1990")
+                .gender("Male")
+                .build();
+        Account account2 = Account.builder()
+                .accountNumber("accountNumber3")
+                .accountType(ApplicationConstants.AccountType.SAVINGS)
+                .balance(1012.00)
+                .currency("GBP")
+                .timeCreated(System.currentTimeMillis())
+                .build();
+
+
+        List<Transaction> transactions = createNTransactionsInAccountInUser(1);
+        List<Transaction> transactions2 = createNTransactionsInAccountInUser(1);
+        persistAllTransactionsInAccountInUser(new ArrayList<>(), account, user);
+        persistAllTransactionsInAccountInUser(new ArrayList<>(), account2, user2);
+        System.out.println(transactions);
+        Transaction transaction = transactions.get(0);
+        TransactionVO transactionVO = new TransactionVO(account2.getId(), account.getId(), transaction.getAmount(), transaction.getCurrency(), ApplicationConstants.TransactionType.CASH_DEPOSIT);
+
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(transactionVO)
+                .post(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users/"+user.getId()+"/accounts/"+account.getId()+"/transactions/");
+        response.then().statusCode(201);
+
+        Integer id = response.path("id");
+        response.then().body("transactionType", CoreMatchers.is(transaction.getTransactionType().toString()));
+        response.then().body("currency", CoreMatchers.is(transaction.getCurrency()));
+        response.then().body("toAccount.id", CoreMatchers.is(account.getId()));
+
+        transaction.setId(id);
+        deleteAllTransactionsInAccountAndUser(transactions, account, user);
+        deleteAllTransactionsInAccountAndUser(new ArrayList<>(), account2, user2);
     }
 
 
