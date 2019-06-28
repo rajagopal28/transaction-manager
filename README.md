@@ -243,7 +243,7 @@ HTTP STATUS: 200
     "message": "Record Creation Failed!"
 }
 ```
-POST:
+POST (DEPOSIT):
 ```bash
 curl -d '{"transactionType" : "CHEQUE_DEPOSIT","amount" : 100.00,"currency" : "USD"}' -H "Content-Type: application/json" -X POST http://localhost:8080/users/1/accounts/1
 ```
@@ -278,6 +278,60 @@ HTTP STATUS: 304
     "transactionType": "CHEQUE_DEPOSIT"
 }
 ```
+
+POST (TRANSFER):
+```bash
+curl -d '{"transactionType" : "TRANSFFER", "fromAccountId" : 2,"amount" : 10.00,"currency" : "USD"}' -H "Content-Type: application/json" -X POST http://localhost:8080/users/1/accounts/1
+```
+``
+HTTP STATUS: 304
+``
+```javascript
+{
+    "amount": 100,
+    "currency": "USD",
+    "fromAccount": {
+        "accountNumber": "1211342SFDS12",
+        "accountType": "SAVINGS",
+        "balance": 23.456000000000003,
+        "currency": "USD",
+        "id": 2,
+        "timeCreated": 1561731946466,
+        "user": {
+            "city": "Pasedena",
+            "dob": "12/12/2019",
+            "email": "penny@caltech.com",
+            "firstName": "Penny",
+            "gender": "female",
+            "id": 2,
+            "lastName": "Hofstader",
+            "phoneNumber": "+811297983423"
+        }
+    },
+    "id": 1,
+    "timeCreated": 1561732053415,
+    "toAccount": {
+        "accountNumber": "1211342SFDS12",
+        "accountType": "SAVINGS",
+        "balance": 223.45600000000002,
+        "currency": "USD",
+        "id": 1,
+        "timeCreated": 1561731933733,
+        "user": {
+            "city": "Pasedena",
+            "dob": "12/12/2019",
+            "email": "lenny@caltech.com",
+            "firstName": "Leonard",
+            "gender": "male",
+            "id": 1,
+            "lastName": "Hofstader",
+            "phoneNumber": "+811297983423"
+        }
+    },
+    "transactionType": "TRANSFER"
+}
+```
+
 
 Possible transaction types:
 - TRANSFER
