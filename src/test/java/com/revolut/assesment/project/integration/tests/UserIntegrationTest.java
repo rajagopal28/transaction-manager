@@ -85,6 +85,14 @@ public class UserIntegrationTest {
     }
 
     @Test
+    public void testSingleUserResponseUnAvailable() throws Exception {
+
+        Response response = RestAssured.get(TEST_ENDPOINT_HOST + ":" + TEST_ENDPOINT_PORT + "/users/1");
+        response.then().statusCode(200);
+        response.then().body(Matchers.isEmptyString());
+    }
+
+    @Test
     public void testCreateUserResponse() throws Exception {
         final List<User> users = createNUsers(1);
         User user = users.get(0);

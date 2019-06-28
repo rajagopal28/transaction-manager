@@ -55,6 +55,13 @@ public class TransactionIntegrationTest {
     }
 
     @Test
+    public void testSingleTransactionResponseUnAvailable() throws Exception {
+        Response response = RestAssured.get(TEST_ENDPOINT_HOST + ":" + TEST_ENDPOINT_PORT + "/users/1/accounts/1/transactions/1");
+        response.then().statusCode(200);
+        response.then().body(Matchers.isEmptyString());
+    }
+
+    @Test
     public void testMultiTransactionsInAccountResponse() throws Exception {
         User user = User.builder().city("city1")
                 .firstName("firstName1")

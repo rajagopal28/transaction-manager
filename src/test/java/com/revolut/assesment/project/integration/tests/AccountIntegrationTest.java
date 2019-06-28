@@ -96,9 +96,16 @@ public class AccountIntegrationTest {
         response.then().body("id", CoreMatchers.is(account.getId()));
         response.then().body("accountNumber", CoreMatchers.is(account.getAccountNumber()));
         response.then().body("accountType", CoreMatchers.is(account.getAccountType().toString()));
-//        response.then().body("balance", BigDecimalCloseTo.closeTo(new BigDecimal(account.getBalance()), new BigDecimal(0.001)));
 
         deleteAllAccountsAndUser(accounts, user);
+    }
+
+    @Test
+    public void testSingleAccountResponseUnAvailable() throws Exception {
+
+        Response response = RestAssured.get(TEST_ENDPOINT_HOST + ":" + TEST_ENDPOINT_PORT + "/users/1/accounts/1");
+        response.then().statusCode(200);
+        response.then().body(Matchers.isEmptyString());
     }
 
     @Test
