@@ -121,7 +121,7 @@ HTTP STATUS: 201
 }
 ```
 
-####/users/{user-id}
+#### /users/{user-id}
 GET:
 ```bash
 curl http://localhost:8080/users/1
@@ -142,7 +142,7 @@ HTTP STATUS: 200
 }
 ```
 
-####/users/{user-id}/accounts
+#### /users/{user-id}/accounts
 GET:
 ```bash
 curl http://localhost:8080/users/1/accounts
@@ -200,7 +200,7 @@ HTTP STATUS: 201
 }
 ```
 
-####/users/{user-id}/accounts/{account-id}
+#### /users/{user-id}/accounts/{account-id}
 GET:
 ```bash
 curl http://localhost:8080/users/1/accounts/1
@@ -229,7 +229,7 @@ HTTP STATUS: 200
 }
 ```
 
-####/users/{user-id}/accounts/{account-id}/transactions
+#### /users/{user-id}/accounts/{account-id}/transactions
 
 GET:
 ```bash
