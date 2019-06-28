@@ -82,7 +82,7 @@ public class TransactionDao {
             em.getTransaction().commit();
             throw new InsufficientBalanceException();
         }
-        transaction.setTimeCreated(new Date(System.currentTimeMillis()));
+        transaction.setTimeCreated(System.currentTimeMillis());
         transaction.setFromAccount(fromAccount);
         transaction.setToAccount(toAccount);
         fromAccount.setBalance(fromAccount.getBalance()-transactionVO.getAmount());

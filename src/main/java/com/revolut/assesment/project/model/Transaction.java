@@ -24,7 +24,7 @@ public class Transaction implements Serializable {
     private Account fromAccount;
     @ManyToOne
     private Account toAccount;
-    private Date timeCreated;
+    private long timeCreated;
     private double amount;
     private String currency;
     private ApplicationConstants.TransactionType transactionType;

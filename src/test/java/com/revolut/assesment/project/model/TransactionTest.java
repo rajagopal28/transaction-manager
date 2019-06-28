@@ -12,7 +12,7 @@ public class TransactionTest {
 
     @Test
     public void testTransactionBuilder() {
-        Date timeCreated = new Date();
+        long timeCreated = System.currentTimeMillis();
         String currency = "INR";
         Account fromAccount = Mockito.mock(Account.class);
         Account toAccount = Mockito.mock(Account.class);
