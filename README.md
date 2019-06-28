@@ -40,6 +40,7 @@ Based on the aforementioned objectives the system that is being built has been b
 
 
 ## API Flows
+### Endpoint info
 | Endpoint\HTTP METHOD | POST            | GET       |
 | ----------- | --------------- | --------- |
 | CRUD OP                               | CREATE                                | READ                                                              | 
@@ -49,6 +50,24 @@ Based on the aforementioned objectives the system that is being built has been b
 | /users/1/accounts/1                   | --                                    | Show Existing User's Chosen Account                               |
 | /users/1/accounts/1/transactions      | Post a transaction to the given account - payload varies           | Show Selected Account transactions   |
 | /users/1/accounts/1/transactions/1    | --                                    | Show Chosen Transaction detail                                    |
+
+### Response Status Codes
+Following are the response status codes that are sent as part of the system
+* 200 - OK
+* 304 - Not Modified
+* 400 - Bad Request
+* 404 - Not Found
+* 500 - Internal Server Error
+
+| Endpoint | Applicable status codes| 
+| ----------- | --------------- |
+| /users                                | 200, 304, 500           |
+| /users/1                              | 200, 404                |
+| /users/1/accounts                     | 200, 400, 500           |
+| /users/1/accounts/1                   | 200, 400, 404           |
+| /users/1/accounts/1/transactions      | 200, 400, 404, 500      |
+| /users/1/accounts/1/transactions/1    | 200, 304, 400, 404, 500,|
+
 
 ## TDD - Red->Green->Refactor cycle
 ![TDD Diagram](red-green-refactor.png)
