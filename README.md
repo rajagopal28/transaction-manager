@@ -68,6 +68,267 @@ Following are the response status codes that are sent as part of the system
 | /users/1/accounts/1/transactions      | 200, 400, 404, 500      |
 | /users/1/accounts/1/transactions/1    | 200, 304, 400, 404, 500,|
 
+### Endpoint details
+#### /users
+GET:
+```bash
+curl http://localhost:8080/users
+```
+``
+HTTP STATUS: 200
+``
+```javascript
+[
+    {
+        "city": "Pasedena",
+        "dob": "11/03/1980",
+        "email": "lenny@caltech.com",
+        "firstName": "Leonard",
+        "gender": "male",
+        "id": 1,
+        "lastName": "Hofstader",
+        "phoneNumber": "+811297983423"
+    },
+    {
+        "city": "Pasedena",
+        "dob": "12/12/1983",
+        "email": "penny@cheesecakefactory.com",
+        "firstName": "Penny",
+        "gender": "female",
+        "id": 2,
+        "lastName": "Barrington",
+        "phoneNumber": "+8242312213123"
+    }
+]
+```
+POST:
+```bash
+curl -d '{"city": "Pasedena","dob": "11/03/1980","email": "lenny@caltech.com","firstName": "Leonard","gender": "male","lastName": "Hofstader","phoneNumber": "+811297983423"}' -H "Content-Type: application/json" -X POST http://localhost:8080/users/
+```
+``
+HTTP STATUS: 201
+``
+```javascript
+{
+    "city": "Pasedena",
+    "dob": "11/03/1980",
+    "email": "lenny@caltech.com",
+    "firstName": "Leonard",
+    "gender": "male",
+    "id": 1,
+    "lastName": "Hofstader",
+    "phoneNumber": "+811297983423"
+}
+```
+
+####/users/{user-id}
+GET:
+```bash
+curl http://localhost:8080/users/1
+```
+``
+HTTP STATUS: 200
+``
+```javascript
+{
+    "city": "Pasedena",
+    "dob": "11/03/1980",
+    "email": "lenny@caltech.com",
+    "firstName": "Leonard",
+    "gender": "male",
+    "id": 1,
+    "lastName": "Hofstader",
+    "phoneNumber": "+811297983423"
+}
+```
+
+####/users/{user-id}/accounts
+GET:
+```bash
+curl http://localhost:8080/users/1/accounts
+```
+``
+HTTP STATUS: 200
+``
+```javascript
+[
+    {
+        "accountNumber": "2321342SFDS12",
+        "accountType": "SAVINGS",
+        "balance": 123.456,
+        "currency": "USD",
+        "id": 1,
+        "timeCreated": 1561723026458,
+        "user": {
+            "city": "Pasedena",
+            "dob": "12/12/2019",
+            "email": "lenny@caltech.com",
+            "firstName": "Leonard",
+            "gender": "male",
+            "id": 1,
+            "lastName": "Hofstader",
+            "phoneNumber": "+811297983423"
+        }
+    }
+]
+```
+POST:
+```bash
+curl -d '{"accountNumber" : "2321342SFDS12","accountType" : "SAVINGS","currency" : "USD","balance" : 123.456}' -H "Content-Type: application/json" -X POST http://localhost:8080/users/1/accounts
+```
+``
+HTTP STATUS: 201
+``
+```javascript
+{
+    "accountNumber": "2321342SFDS12",
+    "accountType": "SAVINGS",
+    "balance": 123.456,
+    "currency": "USD",
+    "id": 1,
+    "timeCreated": 1561723026458,
+    "user": {
+        "city": null,
+        "dob": null,
+        "email": null,
+        "firstName": null,
+        "gender": null,
+        "id": 1,
+        "lastName": null,
+        "phoneNumber": null
+    }
+}
+```
+
+####/users/{user-id}/accounts/{account-id}
+GET:
+```bash
+curl http://localhost:8080/users/1/accounts/1
+```
+``
+HTTP STATUS: 200
+``
+```javascript
+{
+    "accountNumber": "2321342SFDS12",
+    "accountType": "SAVINGS",
+    "balance": 123.456,
+    "currency": "USD",
+    "id": 1,
+    "timeCreated": 1561723026458,
+    "user": {
+        "city": "Pasedena",
+        "dob": "12/12/2019",
+        "email": "lenny@caltech.com",
+        "firstName": "Leonard",
+        "gender": "male",
+        "id": 1,
+        "lastName": "Hofstader",
+        "phoneNumber": "+811297983423"
+    }
+}
+```
+
+####/users/{user-id}/accounts/{account-id}/transactions
+
+GET:
+```bash
+curl http://localhost:8080/users/1/accounts
+```
+``
+HTTP STATUS: 200
+``
+```javascript
+{
+    "message": "Record Creation Failed!"
+}
+```
+POST:
+```bash
+curl -d '{"transactionType" : "CHEQUE_DEPOSIT","amount" : 100.00,"currency" : "USD"}' -H "Content-Type: application/json" -X POST http://localhost:8080/users/1/accounts/1
+```
+``
+HTTP STATUS: 304
+``
+```javascript
+{
+    "amount": 100,
+    "currency": "USD",
+    "fromAccount": null,
+    "id": 1,
+    "timeCreated": 0,
+    "toAccount": {
+        "accountNumber": "2321342SFDS12",
+        "accountType": "SAVINGS",
+        "balance": 223.45600000000002,
+        "currency": "USD",
+        "id": 1,
+        "timeCreated": 1561723026458,
+        "user": {
+            "city": "Pasedena",
+            "dob": "12/12/2019",
+            "email": "lenny@caltech.com",
+            "firstName": "Leonard",
+            "gender": "male",
+            "id": 1,
+            "lastName": "Hofstader",
+            "phoneNumber": "+811297983423"
+        }
+    },
+    "transactionType": "CHEQUE_DEPOSIT"
+}
+```
+
+Possible transaction types:
+- TRANSFER
+- CHEQUE_DEPOSIT
+- CASH_DEPOSIT
+
+Possible error messages:
+* Record Creation Failed!
+* Unable to process transaction! Currency Conversion Not enabled
+* Unable to process transaction! Insufficient Balance in you Account!!
+
+
+#### /users/{user-id}/accounts/{account-id}/transactions/{transaction-id}
+
+GET:
+```bash
+curl http://localhost:8080/users/1/accounts/1/transactions/1
+```
+``
+HTTP STATUS: 200
+``
+```javascript
+{
+    "amount": 100,
+    "currency": "USD",
+    "fromAccount": null,
+    "id": 1,
+    "timeCreated": 0,
+    "toAccount": {
+        "accountNumber": "2321342SFDS12",
+        "accountType": "SAVINGS",
+        "balance": 223.45600000000002,
+        "currency": "USD",
+        "id": 1,
+        "timeCreated": 1561723026458,
+        "user": {
+            "city": "Pasedena",
+            "dob": "12/12/2019",
+            "email": "lenny@caltech.com",
+            "firstName": "Leonard",
+            "gender": "male",
+            "id": 1,
+            "lastName": "Hofstader",
+            "phoneNumber": "+811297983423"
+        }
+    },
+    "transactionType": "CHEQUE_DEPOSIT"
+}
+```
+
+
 ### Error handling
 All the internal errors including runtime errors are handled at controller and sent as a valid response to user following is an example
 ```bash
