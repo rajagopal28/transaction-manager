@@ -26,6 +26,6 @@ public class Account implements Serializable {
     private AccountType accountType;
     private String currency;
     private double balance;
-    private Date timeCreated;
+    private long timeCreated;
 }
 

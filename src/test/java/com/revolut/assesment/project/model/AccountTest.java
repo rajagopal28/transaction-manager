@@ -19,7 +19,7 @@ public class AccountTest {
         Account account = Account.builder()
                 .accountType(ApplicationConstants.AccountType.CREDIT)
                 .balance(balance).currency(curr)
-                .timeCreated(timeCreated)
+                .timeCreated(System.currentTimeMillis())
                 .id(100)
                 .accountNumber(accountNumber)
                 .user(mockUser)

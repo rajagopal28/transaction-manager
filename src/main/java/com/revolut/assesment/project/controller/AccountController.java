@@ -38,7 +38,7 @@ public class AccountController {
     public Response createAccount(@PathParam("user_id") Integer userId, Account account) {
         try {
             account.setUser(User.builder().id(userId).build());
-            account.setTimeCreated(new Date(System.currentTimeMillis()));
+            account.setTimeCreated(System.currentTimeMillis());
             accountDao.addAccount(account);
             return Response.status(201).entity(account).build();
         } catch (NoDataUpdatedException nde) {
