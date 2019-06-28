@@ -13,13 +13,13 @@ public class AccountTest {
     public void testAccountBuilder() {
         double balance = 100.00;
         String curr = "USD";
-        Date timeCreated = new Date();
         String accountNumber = "341232BC3243";
         User mockUser = Mockito.mock(User.class);
+        long timeCreated = System.currentTimeMillis();
         Account account = Account.builder()
                 .accountType(ApplicationConstants.AccountType.CREDIT)
                 .balance(balance).currency(curr)
-                .timeCreated(System.currentTimeMillis())
+                .timeCreated(timeCreated)
                 .id(100)
                 .accountNumber(accountNumber)
                 .user(mockUser)
