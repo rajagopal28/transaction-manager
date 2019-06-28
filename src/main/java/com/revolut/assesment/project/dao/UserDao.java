@@ -6,6 +6,9 @@ import com.revolut.assesment.project.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 
@@ -17,10 +20,14 @@ public class UserDao {
     }
 
     public List<User> getUsers() {
-        TypedQuery<User> query =
-                em.createQuery(ApplicationConstants.SELECT_ALL_QUERY_p1+ User.class.getSimpleName() + ApplicationConstants.SELECT_ALL_QUERY_p2,
-                        User.class);
-        return query.getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<User> query = cb.createQuery(User.class);
+        Root<User> sm = query.from(User.class);
+        query = query.select(sm);
+
+        TypedQuery<User> typedQuery = em.createQuery(query);
+        return typedQuery.getResultList();
     }
 
     public void addUser(User user) {

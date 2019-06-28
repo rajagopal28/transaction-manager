@@ -15,11 +15,6 @@ public interface ApplicationConstants {
 
     String SQLITE_DB_NAME = "transactions-db";
 
-    String SELECT_ALL_QUERY_p1 = "SELECT T from ";
-    String SELECT_ALL_QUERY_p2 = " T ";
-
-
-
     String RESPONSE_ERROR_DATABASE_ISSUE = "Error accessing database!";
     String RESPONSE_ERROR_RECORD_NOT_CREATED = "Record Creation Failed!";
     String RESPONSE_ERROR_CURRENCY_CONVERSION_NOT_DONE = "Unable to process transaction! Currency Conversion Not enabled!!";

@@ -9,6 +9,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,15 +36,28 @@ public class UserDaoTest {
         UserDao userDao = new UserDao();
 
         TypedQuery mockQuery = Mockito.mock(TypedQuery.class);
+        CriteriaQuery<User> q = Mockito.mock(CriteriaQuery.class);
+        CriteriaBuilder cb = Mockito.mock(CriteriaBuilder.class);
+        Root<User> sm = Mockito.mock(Root.class);
 
+        Mockito.when(q.select(Mockito.eq(sm))).thenReturn(q);
+        Mockito.when(q.from(Mockito.eq(User.class))).thenReturn(sm);
+        Mockito.when(cb.createQuery(Mockito.eq(User.class))).thenReturn(q);
+        Mockito.when(em.getCriteriaBuilder()).thenReturn(cb);
         List<User> expected = new ArrayList<>();
         Mockito.when(mockQuery.getResultList()).thenReturn(expected);
-        Mockito.when(em.createQuery(Mockito.anyString(), Mockito.eq(User.class))).thenReturn(mockQuery);
+        Mockito.when(em.createQuery(Mockito.eq(q))).thenReturn(mockQuery);
 
         List<User> users = userDao.getUsers();
         assertEquals(expected, users);
         Mockito.verify(mockQuery).getResultList();
-        Mockito.verify(em).createQuery(Mockito.anyString(), Mockito.eq(User.class));
+        Mockito.verify(em).createQuery(Mockito.eq(q));
+        Mockito.verify(em).getCriteriaBuilder();
+        Mockito.verify(cb).createQuery(Mockito.eq(User.class));
+        Mockito.verify(q).from(Mockito.eq(User.class));
+        Mockito.verify(q).select(Mockito.eq(sm));
+
+
         Mockito.verify(mockFactory).createEntityManager();
 
     }
