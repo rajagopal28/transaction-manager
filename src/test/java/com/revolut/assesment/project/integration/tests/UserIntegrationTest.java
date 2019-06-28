@@ -8,6 +8,7 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -80,6 +81,26 @@ public class UserIntegrationTest {
         response.then().body("email", CoreMatchers.is(user.getEmail()));
         response.then().body("phoneNumber", CoreMatchers.is(user.getPhoneNumber()));
 
+        deleteAllUsers(users);
+    }
+
+    @Test
+    public void testCreateUserResponse() throws Exception {
+        final List<User> users = createNUsers(1);
+        User user = users.get(0);
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(user)
+                .post(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+ testPathUsers);
+        response.then().statusCode(201);
+
+        Integer id = response.path("id");
+        response.then().body("firstName", CoreMatchers.is(user.getFirstName()));
+        response.then().body("email", CoreMatchers.is(user.getEmail()));
+        response.then().body("phoneNumber", CoreMatchers.is(user.getPhoneNumber()));
+
+        user.setId(id);
         deleteAllUsers(users);
     }
 

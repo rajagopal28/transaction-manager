@@ -9,6 +9,7 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -101,6 +102,35 @@ public class AccountIntegrationTest {
         deleteAllAccountsAndUser(accounts, user);
     }
 
+    @Test
+    public void testCreateAccountResponse() throws Exception {
+        User user = User.builder().city("city1")
+                .firstName("firstName1")
+                .lastName("lastName1")
+                .email("email1")
+                .phoneNumber("phoneNumber1")
+                .dob("23/12/1990")
+                .gender("Female")
+                .build();
+        final List<Account> accounts = createNAccountsInUser(1);
+        persistAllAccountsInUser(new ArrayList<>(), user);// persist only user
+        Account account = accounts.get(0);
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(account)
+                .post(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users/"+user.getId()+"/accounts/");
+        response.then().statusCode(201);
+
+        Integer id = response.path("id");
+        response.then().body("accountNumber", CoreMatchers.is(account.getAccountNumber()));
+        response.then().body("accountType", CoreMatchers.is(account.getAccountType().toString()));
+        response.then().body("currency", CoreMatchers.is(account.getCurrency()));
+
+        account.setId(id);
+        deleteAllAccountsAndUser(accounts, user);
+    }
+
     private List<Account> createNAccountsInUser(int n) {
         List<Account> accounts = new ArrayList<>();
         for (int i = 1; i <=n ; i++) {
@@ -109,7 +139,7 @@ public class AccountIntegrationTest {
                     .accountType(ApplicationConstants.AccountType.SAVINGS)
                     .balance(i*Math.random()*100)
                     .currency("GBP")
-                    .timeCreated(new Date(System.currentTimeMillis()))
+                    .timeCreated(System.currentTimeMillis())
                     .build();
             accounts.add(a);
         }
