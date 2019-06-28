@@ -24,7 +24,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class AccountIntegrationTest {
     @BeforeClass
     public static void setUp() throws Exception{
         URI uri = UriBuilder.fromUri(TEST_ENDPOINT_HOST+"/").port(TEST_ENDPOINT_PORT).build();
-        // Create an HTTP server listening at port 8282
+        // Create an HTTP server listening at port TEST_ENDPOINT_PORT
         server = HttpServer.create(new InetSocketAddress(uri.getPort()), 0);
         // Create a handler wrapping the JAX-RS application
         ResourceConfig resourceConfig = new ClassNamesResourceConfig(AccountController.class);
