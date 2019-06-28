@@ -23,9 +23,9 @@ public class TransactionController {
         try {
             List<Transaction> accounts = transactionDao.getTransactions(Account.builder().id(accountId).build());
             return Response.status(200).entity(accounts).build();
-        } catch (DatabaseException de) {
+        } catch (Exception de) {
             de.printStackTrace();
-            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE).build()).build();
+            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
         }
     }
 
@@ -53,12 +53,12 @@ public class TransactionController {
         try {
             Transaction result = transactionDao.getTransaction(id);
             return Response.status(200).entity(result).build();
-        } catch (DatabaseException de) {
-            de.printStackTrace();
-            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATABASE_ISSUE).build()).build();
         } catch (NoRecordsFoundException nre) {
             nre.printStackTrace();
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
+        } catch (Exception de) {
+            de.printStackTrace();
+            return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
         }
     }
 }

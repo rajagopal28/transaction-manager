@@ -1,14 +1,11 @@
 package com.revolut.assesment.project.controller;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
-import com.revolut.assesment.project.dao.AccountDao;
 import com.revolut.assesment.project.dao.TransactionDao;
-import com.revolut.assesment.project.dao.UserDao;
 import com.revolut.assesment.project.exception.CurrencyConversionNotSupportedException;
 import com.revolut.assesment.project.exception.InsufficientBalanceException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
-import com.revolut.assesment.project.model.User;
 import com.revolut.assesment.project.vo.MessageVO;
 import com.revolut.assesment.project.vo.TransactionVO;
 import org.junit.Before;
@@ -23,11 +20,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.Response;
-
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Persistence.class, TransactionDao.class, TransactionController.class})
