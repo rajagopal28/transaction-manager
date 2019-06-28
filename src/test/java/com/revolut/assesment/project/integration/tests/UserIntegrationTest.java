@@ -30,6 +30,7 @@ public class UserIntegrationTest {
     private static HttpServer server;
     private static final String TEST_ENDPOINT_HOST = "http://localhost";
     private static final int TEST_ENDPOINT_PORT = 8282;
+    private final String testPathUsers = "/users/";
 
     @BeforeClass
     public static void setUp() throws Exception{
@@ -46,7 +47,7 @@ public class UserIntegrationTest {
 
     @Test
     public void testEmptyResponse() throws Exception {
-        Response response = RestAssured.get(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users");
+        Response response = RestAssured.get(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+testPathUsers);
         response.then().statusCode(200).body("A", Matchers.empty());
     }
 
@@ -55,7 +56,7 @@ public class UserIntegrationTest {
         final List<User> users = createNUsers(2);
         persistAllUsers(users);
         System.out.println(users);
-        Response response = RestAssured.get(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users");
+        Response response = RestAssured.get(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+testPathUsers);
         response.then().statusCode(200).body("A", Matchers.hasSize(2));
 
         response.then().body("id", CoreMatchers.hasItems(users.stream().map(User::getId).collect(Collectors.toSet()).toArray()));
@@ -71,7 +72,7 @@ public class UserIntegrationTest {
         final List<User> users = createNUsers(2);
         persistAllUsers(users);
         User user = users.get(1);
-        Response response = RestAssured.get(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users/"+user.getId());
+        Response response = RestAssured.get(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+ testPathUsers +user.getId());
         response.then().statusCode(200);
 
         response.then().body("id", CoreMatchers.is(user.getId()));
