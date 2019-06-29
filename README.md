@@ -7,6 +7,7 @@
 * [API System](#api-system-flow)
 * [API Flows](#api-flows)
 * [TDD-Red->Green->Refactor cycle](#tdd---red->green->refactor-cycle)
+    * [Test Coverages](#unit-test-and-integration-test-coverage)
 * [Setup](#setup-and-launch)
 * [Libraries Used](#libraries-used)
 * [Challenges](#challenges)
@@ -121,6 +122,13 @@ HTTP STATUS: 201
 }
 ```
 
+*Possible error messages:*
+* Record Creation Failed!
+* Required Field(s) are Invalid! Field(s) : <list-of-fields>
+* Unable to Find Record with given data!
+* Internal Server Error! Please check Logs!
+
+
 #### /users/{user-id}
 GET:
 ```bash
@@ -199,6 +207,12 @@ HTTP STATUS: 201
     }
 }
 ```
+
+*Possible error messages:*
+* Record Creation Failed!
+* Required Field(s) are Invalid! Field(s) : <list-of-fields>
+* Unable to Find Record with given data!
+* Internal Server Error! Please check Logs!
 
 #### /users/{user-id}/accounts/{account-id}
 GET:
@@ -333,18 +347,19 @@ HTTP STATUS: 304
 ```
 
 
-Possible transaction types:
+*Possible transaction types:*
 - TRANSFER
 - CHEQUE_DEPOSIT
 - CASH_DEPOSIT
 
-Possible error messages:
+*Possible error messages:*
 * Record Creation Failed!
 * Unable to process transaction! Currency Conversion Not enabled
 * Unable to process transaction! Insufficient Balance in you Account!!
 * Required Field(s) are Invalid! Field(s) : <list-of-fields>
 * Unable to Find Record with given data!
 * Cannot transfer within the Same Account!
+* Internal Server Error! Please check Logs!
 
 
 #### /users/{user-id}/accounts/{account-id}/transactions/{transaction-id}
@@ -403,6 +418,9 @@ HTTP STATUS: 304
 
 ## TDD - Red->Green->Refactor cycle
 ![TDD Diagram](red-green-refactor.png)
+
+### Unit test and Integration test coverage
+![Test Coverage](unit-tests-and-integration-tests.png)
 
 ## Setup and launch
 
