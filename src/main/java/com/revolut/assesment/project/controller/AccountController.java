@@ -7,6 +7,8 @@ import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.User;
 import com.revolut.assesment.project.vo.MessageVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Path("/users/{user_id}/accounts")
 public class AccountController {
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
     AccountDao accountDao = new AccountDao();
 
     @GET
@@ -24,7 +27,7 @@ public class AccountController {
             List<Account> accounts = accountDao.getAccounts(User.builder().id(userId).build());
             return Response.status(200).entity(accounts).build();
         } catch (Exception de) {
-            de.printStackTrace();
+            logger.error(de.getMessage(), de);
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
         }
     }
@@ -39,10 +42,10 @@ public class AccountController {
             accountDao.addAccount(account);
             return Response.status(201).entity(account).build();
         } catch (DataValidationException nde) {
-            nde.printStackTrace();
+            logger.error(nde.getMessage(), nde);
             return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+nde.getFieldNames()).build()).build();
         } catch(Exception de) {
-            de.printStackTrace();
+            logger.error(de.getMessage(), de);
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
         }
     }
@@ -55,10 +58,10 @@ public class AccountController {
             Account result = accountDao.getAccount(id);
             return Response.status(200).entity(result).build();
         } catch (NoRecordsFoundException nre) {
-            nre.printStackTrace();
+            logger.error(nre.getMessage(), nre);
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         } catch (Exception de) {
-            de.printStackTrace();
+            logger.error(de.getMessage(), de);
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
         }
     }

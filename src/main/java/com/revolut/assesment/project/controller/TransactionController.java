@@ -7,6 +7,8 @@ import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
 import com.revolut.assesment.project.vo.MessageVO;
 import com.revolut.assesment.project.vo.TransactionVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Path("/users/{user_id}/accounts/{account_id}/transactions")
 public class TransactionController {
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
     TransactionDao transactionDao = new TransactionDao();
 
     @GET
@@ -24,7 +27,7 @@ public class TransactionController {
             List<Transaction> accounts = transactionDao.getTransactions(Account.builder().id(accountId).build());
             return Response.status(200).entity(accounts).build();
         } catch (Exception de) {
-            de.printStackTrace();
+            logger.error(de.getMessage(), de);
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
         }
     }
@@ -36,24 +39,21 @@ public class TransactionController {
         try {
             transactionVO.setToAccountId(accountId);
             Transaction transaction = transactionDao.transact(transactionVO);
-            System.out.println(transaction);
             return Response.status(201).entity(transaction).build();
         } catch (NoRecordsFoundException nre) {
-            nre.printStackTrace();;
+            logger.error(nre.getMessage(), nre);
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         } catch (CurrencyConversionNotSupportedException ccne) {
-            ccne.printStackTrace();;
+            logger.error(ccne.getMessage(), ccne);
             return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_CURRENCY_CONVERSION_NOT_DONE).build()).build();
         } catch(InsufficientBalanceException ibe) {
-            ibe.printStackTrace();
+            logger.error(ibe.getMessage(), ibe);
             return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_INSUFFICIENT_BALANCE).build()).build();
         } catch(SameAccountTransferException sat) {
-            sat.printStackTrace();
-            final MessageVO messageVO = MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_SAME_ACCOUNT_TRANSFER).build();
-            System.out.println(messageVO.getMessage());
-            return Response.status(400).entity(messageVO).build();
+            logger.error(sat.getMessage(), sat);
+            return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_SAME_ACCOUNT_TRANSFER).build()).build();
         } catch(DataValidationException dve) {
-            dve.printStackTrace();
+            logger.error(dve.getMessage(), dve);
             return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+dve.getFieldNames()).build()).build();
         }
     }
@@ -66,10 +66,10 @@ public class TransactionController {
             Transaction result = transactionDao.getTransaction(id);
             return Response.status(200).entity(result).build();
         } catch (NoRecordsFoundException nre) {
-            nre.printStackTrace();
+            logger.error(nre.getMessage(), nre);
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         } catch (Exception de) {
-            de.printStackTrace();
+            logger.error(de.getMessage(), de);
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
         }
     }
