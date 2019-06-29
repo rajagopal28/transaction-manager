@@ -38,9 +38,9 @@ public class AccountController {
             account.setTimeCreated(System.currentTimeMillis());
             accountDao.addAccount(account);
             return Response.status(201).entity(account).build();
-        } catch (NoRecordsFoundException nde) {
+        } catch (DataValidationException nde) {
             nde.printStackTrace();
-            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED).build()).build();
+            return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+nde.getFieldNames()).build()).build();
         } catch(Exception de) {
             de.printStackTrace();
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
@@ -54,12 +54,9 @@ public class AccountController {
         try {
             Account result = accountDao.getAccount(id);
             return Response.status(200).entity(result).build();
-        } catch (DataValidationException de) {
-            de.printStackTrace();
-            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH + de.getFieldNames()).build()).build();
         } catch (NoRecordsFoundException nre) {
             nre.printStackTrace();
-            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
+            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         } catch (Exception de) {
             de.printStackTrace();
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();

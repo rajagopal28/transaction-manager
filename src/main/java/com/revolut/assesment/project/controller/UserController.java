@@ -34,7 +34,6 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(User user) {
         try {
-            System.out.println(user);
             userService.addUser(user);
             return Response.status(201).entity(user).build();
         } catch (DataValidationException nde) {
@@ -55,7 +54,7 @@ public class UserController {
             return Response.status(200).entity(result).build();
         } catch (NoRecordsFoundException nre) {
             nre.printStackTrace();
-            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
+            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         }  catch (Exception de) {
             de.printStackTrace();
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();

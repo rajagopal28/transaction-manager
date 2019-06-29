@@ -37,12 +37,18 @@ public class TransactionController {
             transactionVO.setToAccountId(accountId);
             Transaction transaction = transactionDao.transact(transactionVO);
             return Response.status(201).entity(transaction).build();
+        } catch (NoRecordsFoundException nre) {
+            nre.printStackTrace();;
+            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         } catch (CurrencyConversionNotSupportedException ccne) {
             ccne.printStackTrace();;
             return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_CURRENCY_CONVERSION_NOT_DONE).build()).build();
         } catch(InsufficientBalanceException ibe) {
             ibe.printStackTrace();
             return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_INSUFFICIENT_BALANCE).build()).build();
+        } catch(DataValidationException dve) {
+            dve.printStackTrace();
+            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+dve.getFieldNames()).build()).build();
         }
     }
 
@@ -55,7 +61,7 @@ public class TransactionController {
             return Response.status(200).entity(result).build();
         } catch (NoRecordsFoundException nre) {
             nre.printStackTrace();
-            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
+            return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         } catch (Exception de) {
             de.printStackTrace();
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();

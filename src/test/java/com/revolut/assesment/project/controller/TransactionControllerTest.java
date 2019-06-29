@@ -3,7 +3,9 @@ package com.revolut.assesment.project.controller;
 import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.dao.TransactionDao;
 import com.revolut.assesment.project.exception.CurrencyConversionNotSupportedException;
+import com.revolut.assesment.project.exception.DataValidationException;
 import com.revolut.assesment.project.exception.InsufficientBalanceException;
+import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
 import com.revolut.assesment.project.vo.MessageVO;
@@ -137,6 +139,47 @@ public class TransactionControllerTest {
 
         assertEquals(ApplicationConstants.RESPONSE_ERROR_CURRENCY_CONVERSION_NOT_DONE, actual.getMessage());
         assertEquals(304, response.getStatus());
+        Mockito.verify(mockService).transact(mockVO);
+    }
+
+    @Test
+    public void testCreateTransactionWithInvalidData() throws Exception {
+
+        TransactionController transactionController = new TransactionController();
+
+        TransactionDao mockService = Mockito.mock(TransactionDao.class);
+
+        TransactionVO mockVO = Mockito.mock(TransactionVO.class);
+        final String someTxnField = "someTxnField";
+        Mockito.when(mockService.transact(mockVO)).thenThrow(new DataValidationException(someTxnField));
+
+        FieldSetter.setField(transactionController, transactionController.getClass().getDeclaredField("transactionDao"), mockService);
+
+        Response response = transactionController.createTransaction(12, 13, mockVO);
+        MessageVO actual = (MessageVO)response.getEntity();
+
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+someTxnField, actual.getMessage());
+        assertEquals(304, response.getStatus());
+        Mockito.verify(mockService).transact(mockVO);
+    }
+
+    @Test
+    public void testCreateTransactionWithNoDataFound() throws Exception {
+
+        TransactionController transactionController = new TransactionController();
+
+        TransactionDao mockService = Mockito.mock(TransactionDao.class);
+
+        TransactionVO mockVO = Mockito.mock(TransactionVO.class);
+        Mockito.when(mockService.transact(mockVO)).thenThrow(new NoRecordsFoundException());
+
+        FieldSetter.setField(transactionController, transactionController.getClass().getDeclaredField("transactionDao"), mockService);
+
+        Response response = transactionController.createTransaction(12, 13, mockVO);
+        MessageVO actual = (MessageVO)response.getEntity();
+
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD, actual.getMessage());
+        assertEquals(404, response.getStatus());
         Mockito.verify(mockService).transact(mockVO);
     }
 }

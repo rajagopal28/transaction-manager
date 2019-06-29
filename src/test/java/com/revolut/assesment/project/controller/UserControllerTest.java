@@ -108,7 +108,7 @@ public class UserControllerTest {
         Response response = userController.getUser(123);
         MessageVO actual = (MessageVO)response.getEntity();
 
-        assertEquals(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER, actual.getMessage());
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD, actual.getMessage());
         assertEquals(404, response.getStatus());
         Mockito.verify(mockService).getUser(Mockito.any(Integer.class));
     }
