@@ -428,7 +428,7 @@ $ java  com.revolut.assesment.project.server.EmbeddedJettyServer
 Following are the Libraries that are used as part of source and test cycles
 ![Dependency Diagram](dependency-libraries.png)
 
->         Developed in Idea's IntelliJ IDE
+>         Developed in Jetbrain's IntelliJ IDE
 
 ## Challenges
 - Had a lot of challenges in setting up environment first with maven as there was a certificate issue that was messing with my maven commands due to network provider issues
