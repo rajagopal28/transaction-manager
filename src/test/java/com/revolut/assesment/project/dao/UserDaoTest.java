@@ -1,5 +1,6 @@
 package com.revolut.assesment.project.dao;
 
+import com.revolut.assesment.project.exception.DataValidationException;
 import com.revolut.assesment.project.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,11 +102,41 @@ public class UserDaoTest {
         EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
         Mockito.when(em.getTransaction()).thenReturn(mockTxn);
 
-        User mockUser = Mockito.mock(User.class);
-        userDao.addUser(mockUser);
+        User user = User.builder()
+                .gender("M")
+                .city("city1")
+                .dob("12/12/1981")
+                .firstName("fName1")
+                .email("email")
+                .build();
+        userDao.addUser(user);
 
         Mockito.verify(em, Mockito.times(2)).getTransaction();
-        Mockito.verify(em).persist(mockUser);
+        Mockito.verify(em).persist(user);
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void testCreateUserWithDataInValidException() throws Exception {
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        UserDao userDao = new UserDao();
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
+
+        User user = Mockito.mock(User.class);
+        userDao.addUser(user);
+
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
+        Mockito.verify(em).persist(user);
         Mockito.verify(mockTxn).begin();
         Mockito.verify(mockTxn).commit();
     }
