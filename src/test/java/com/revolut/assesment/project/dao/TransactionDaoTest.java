@@ -4,6 +4,7 @@ import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.exception.CurrencyConversionNotSupportedException;
 import com.revolut.assesment.project.exception.InsufficientBalanceException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
+import com.revolut.assesment.project.exception.SameAccountTransferException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
 import com.revolut.assesment.project.vo.TransactionVO;
@@ -321,5 +322,39 @@ public class TransactionDaoTest {
         Mockito.when(em.find(Mockito.eq(Transaction.class),Mockito.eq(txnId))).thenReturn(expected);
 
         transactionDao.getTransaction(txnId);
+    }
+
+    @Test(expected = SameAccountTransferException.class)
+    public void testGetTransactionWithSameAccountTransfer() throws Exception{
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+
+        TransactionDao transactionDao = new TransactionDao();
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
+
+
+        int toAccountId = 12;
+
+        TransactionVO transactionVO = TransactionVO.builder()
+                .transactionType(ApplicationConstants.TransactionType.TRANSFER)
+                .toAccountId(toAccountId)
+                .fromAccountId(toAccountId)
+                .currency("USD")
+                .amount(12.00)
+                .build();
+
+        transactionDao.transact(transactionVO);
+
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
     }
 }

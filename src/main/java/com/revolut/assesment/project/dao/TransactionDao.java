@@ -1,10 +1,7 @@
 package com.revolut.assesment.project.dao;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
-import com.revolut.assesment.project.exception.CurrencyConversionNotSupportedException;
-import com.revolut.assesment.project.exception.DataValidationException;
-import com.revolut.assesment.project.exception.InsufficientBalanceException;
-import com.revolut.assesment.project.exception.NoRecordsFoundException;
+import com.revolut.assesment.project.exception.*;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
 import com.revolut.assesment.project.vo.TransactionVO;
@@ -75,6 +72,9 @@ public class TransactionDao {
 
     private Transaction performAccountTransfer(TransactionVO transactionVO) {
         validateTransactionVO(transactionVO);
+        if(transactionVO.getFromAccountId().equals(transactionVO.getToAccountId())) {
+            throw new SameAccountTransferException();
+        }
         Transaction transaction = transactionVO.getTransaction();
         em.getTransaction().begin();
         Account fromAccount = em.find(Account.class, transactionVO.getFromAccountId());
@@ -84,6 +84,7 @@ public class TransactionDao {
             em.getTransaction().commit();
             throw new NoRecordsFoundException();
         }
+
         if(!fromAccount.getCurrency().equalsIgnoreCase(toAccount.getCurrency())
                 || !fromAccount.getCurrency().equalsIgnoreCase(transactionVO.getCurrency())) {
             em.getTransaction().commit();

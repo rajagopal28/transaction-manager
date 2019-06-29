@@ -36,19 +36,25 @@ public class TransactionController {
         try {
             transactionVO.setToAccountId(accountId);
             Transaction transaction = transactionDao.transact(transactionVO);
+            System.out.println(transaction);
             return Response.status(201).entity(transaction).build();
         } catch (NoRecordsFoundException nre) {
             nre.printStackTrace();;
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_RECORD).build()).build();
         } catch (CurrencyConversionNotSupportedException ccne) {
             ccne.printStackTrace();;
-            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_CURRENCY_CONVERSION_NOT_DONE).build()).build();
+            return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_CURRENCY_CONVERSION_NOT_DONE).build()).build();
         } catch(InsufficientBalanceException ibe) {
             ibe.printStackTrace();
-            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_INSUFFICIENT_BALANCE).build()).build();
+            return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_INSUFFICIENT_BALANCE).build()).build();
+        } catch(SameAccountTransferException sat) {
+            sat.printStackTrace();
+            final MessageVO messageVO = MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_SAME_ACCOUNT_TRANSFER).build();
+            System.out.println(messageVO.getMessage());
+            return Response.status(400).entity(messageVO).build();
         } catch(DataValidationException dve) {
             dve.printStackTrace();
-            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+dve.getFieldNames()).build()).build();
+            return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+dve.getFieldNames()).build()).build();
         }
     }
 
