@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UserIntegrationTest {
+public class UserIntegrationTest extends BaseIntegrationTest {
     private static HttpServer server;
     private static final String TEST_ENDPOINT_HOST = "http://localhost";
     private static final int TEST_ENDPOINT_PORT = 8282;
@@ -35,15 +35,8 @@ public class UserIntegrationTest {
 
     @BeforeClass
     public static void setUp() throws Exception{
-        URI uri = UriBuilder.fromUri(TEST_ENDPOINT_HOST+"/").port(TEST_ENDPOINT_PORT).build();
-        // Create an HTTP server listening at port TEST_ENDPOINT_PORT
-        server = HttpServer.create(new InetSocketAddress(uri.getPort()), 0);
-        // Create a handler wrapping the JAX-RS application
         ResourceConfig resourceConfig = new ClassNamesResourceConfig(UserController.class);
-        HttpHandler handler = RuntimeDelegate.getInstance().createEndpoint(resourceConfig, HttpHandler.class);
-        // Map JAX-RS handler to the server root
-        server.createContext(uri.getPath(), handler);
-        server.start();
+        BaseIntegrationTest.createAndStartServerForConfig(TEST_ENDPOINT_HOST, TEST_ENDPOINT_PORT, resourceConfig);
     }
 
     @Test
@@ -166,6 +159,6 @@ public class UserIntegrationTest {
 
     @AfterClass
     public static void tearDown() {
-        server.stop(0);
+        BaseIntegrationTest.stopServer();
     }
 }
