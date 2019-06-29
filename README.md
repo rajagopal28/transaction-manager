@@ -342,6 +342,9 @@ Possible error messages:
 * Record Creation Failed!
 * Unable to process transaction! Currency Conversion Not enabled
 * Unable to process transaction! Insufficient Balance in you Account!!
+* Required Field(s) are Invalid! Field(s) : <list-of-fields>
+* Unable to Find Record with given data!
+* Cannot transfer within the Same Account!
 
 
 #### /users/{user-id}/accounts/{account-id}/transactions/{transaction-id}
