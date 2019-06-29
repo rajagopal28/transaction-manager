@@ -2,7 +2,7 @@ package com.revolut.assesment.project.controller;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.dao.UserDao;
-import com.revolut.assesment.project.exception.NoDataUpdatedException;
+import com.revolut.assesment.project.exception.DataValidationException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
 import com.revolut.assesment.project.vo.MessageVO;
@@ -162,15 +162,16 @@ public class UserControllerTest {
 
         User mock = Mockito.mock(User.class);
 
-        Mockito.doThrow(new NoDataUpdatedException()).when(mockService).addUser(mock);
+        final String someInvalidField = "someField";
+        Mockito.doThrow(new DataValidationException(someInvalidField)).when(mockService).addUser(mock);
 
         FieldSetter.setField(userController, userController.getClass().getDeclaredField("userService"), mockService);
 
         Response response = userController.createUser(mock);
         MessageVO actual = (MessageVO)response.getEntity();
 
-        assertEquals(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED, actual.getMessage());
-        assertEquals(304, response.getStatus());
+        assertEquals(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+ someInvalidField, actual.getMessage());
+        assertEquals(400, response.getStatus());
         Mockito.verify(mockService).addUser(Mockito.any(User.class));
     }
 

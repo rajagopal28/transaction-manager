@@ -2,8 +2,7 @@ package com.revolut.assesment.project.controller;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.dao.AccountDao;
-import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
-import com.revolut.assesment.project.exception.NoDataUpdatedException;
+import com.revolut.assesment.project.exception.DataValidationException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.User;
@@ -39,7 +38,7 @@ public class AccountController {
             account.setTimeCreated(System.currentTimeMillis());
             accountDao.addAccount(account);
             return Response.status(201).entity(account).build();
-        } catch (NoDataUpdatedException nde) {
+        } catch (NoRecordsFoundException nde) {
             nde.printStackTrace();
             return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED).build()).build();
         } catch(Exception de) {
@@ -55,7 +54,10 @@ public class AccountController {
         try {
             Account result = accountDao.getAccount(id);
             return Response.status(200).entity(result).build();
-        } catch (MoreThanOneRecordFoundException | NoRecordsFoundException nre) {
+        } catch (DataValidationException de) {
+            de.printStackTrace();
+            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH + de.getFieldNames()).build()).build();
+        } catch (NoRecordsFoundException nre) {
             nre.printStackTrace();
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
         } catch (Exception de) {

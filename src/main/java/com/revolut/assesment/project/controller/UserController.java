@@ -2,8 +2,7 @@ package com.revolut.assesment.project.controller;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.dao.UserDao;
-import com.revolut.assesment.project.exception.MoreThanOneRecordFoundException;
-import com.revolut.assesment.project.exception.NoDataUpdatedException;
+import com.revolut.assesment.project.exception.DataValidationException;
 import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.User;
 import com.revolut.assesment.project.vo.MessageVO;
@@ -38,9 +37,9 @@ public class UserController {
             System.out.println(user);
             userService.addUser(user);
             return Response.status(201).entity(user).build();
-        } catch (NoDataUpdatedException nde) {
+        } catch (DataValidationException nde) {
             nde.printStackTrace();;
-            return Response.status(304).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_RECORD_NOT_CREATED).build()).build();
+            return Response.status(400).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_DATA_VALIDATION_FAILED_WITH+nde.getFieldNames()).build()).build();
         } catch(Exception de) {
             de.printStackTrace();
             return Response.status(500).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_GENERIC_MESSAGE).build()).build();
@@ -54,7 +53,7 @@ public class UserController {
         try {
             User result = userService.getUser(id);
             return Response.status(200).entity(result).build();
-        } catch (MoreThanOneRecordFoundException | NoRecordsFoundException nre) {
+        } catch (NoRecordsFoundException nre) {
             nre.printStackTrace();
             return Response.status(404).entity(MessageVO.builder().message(ApplicationConstants.RESPONSE_ERROR_UNABLE_TO_FIND_USER).build()).build();
         }  catch (Exception de) {
