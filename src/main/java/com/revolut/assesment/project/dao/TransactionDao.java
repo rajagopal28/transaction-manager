@@ -2,7 +2,9 @@ package com.revolut.assesment.project.dao;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.exception.CurrencyConversionNotSupportedException;
+import com.revolut.assesment.project.exception.DataValidationException;
 import com.revolut.assesment.project.exception.InsufficientBalanceException;
+import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
 import com.revolut.assesment.project.vo.TransactionVO;
@@ -12,6 +14,7 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionDao {
@@ -49,7 +52,7 @@ public class TransactionDao {
             case CASH_DEPOSIT:
             case CHEQUE_DEPOSIT:
                 result = depositTransfer(transactionVO);
-                    break;
+                break;
         }
         return  result;
     }
@@ -58,8 +61,11 @@ public class TransactionDao {
         Transaction transaction = transactionVO.getTransaction();
         em.getTransaction().begin();
         Account toAccount = em.find(Account.class, transactionVO.getToAccountId());
+        if(toAccount == null) {
+            em.getTransaction().commit();
+            throw new NoRecordsFoundException();
+        }
         toAccount.setBalance(toAccount.getBalance()+transaction.getAmount());
-
         transaction.setToAccount(toAccount);
         em.persist(transaction);
         em.merge(toAccount);
@@ -68,11 +74,16 @@ public class TransactionDao {
     }
 
     private Transaction performAccountTransfer(TransactionVO transactionVO) {
+        validateTransactionVO(transactionVO);
         Transaction transaction = transactionVO.getTransaction();
         em.getTransaction().begin();
         Account fromAccount = em.find(Account.class, transactionVO.getFromAccountId());
         Account toAccount = em.find(Account.class, transactionVO.getToAccountId());
 
+        if(fromAccount == null || toAccount == null) {
+            em.getTransaction().commit();
+            throw new NoRecordsFoundException();
+        }
         if(!fromAccount.getCurrency().equalsIgnoreCase(toAccount.getCurrency())
                 || !fromAccount.getCurrency().equalsIgnoreCase(transactionVO.getCurrency())) {
             em.getTransaction().commit();
@@ -95,7 +106,33 @@ public class TransactionDao {
     }
 
     public Transaction getTransaction(Integer transactionId) {
-        return em.find(Transaction.class, transactionId);
+        final Transaction transaction = em.find(Transaction.class, transactionId);
+        if(transaction == null) {
+            throw new NoRecordsFoundException();
+        }
+        return transaction;
+    }
+
+    public void validateTransactionVO(TransactionVO transactionVO) {
+        List<String> failedFields = new ArrayList<>();
+        if(transactionVO.getToAccountId() == null) {
+            failedFields.add("toAccountId");
+        }
+        if(transactionVO.getFromAccountId() == null) {
+            failedFields.add("fromAccountId");
+        }
+        if(transactionVO.getTransactionType() == null) {
+            failedFields.add("transactionType");
+        }
+        if(transactionVO.getAmount() < 0) {
+            failedFields.add("amount");
+        }
+        if(transactionVO.getCurrency() == null) {
+            failedFields.add("currency");
+        }
+        if(!failedFields.isEmpty()) {
+            throw new DataValidationException(failedFields.toString());
+        }
     }
 
 

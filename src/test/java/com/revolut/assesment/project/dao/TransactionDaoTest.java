@@ -3,6 +3,7 @@ package com.revolut.assesment.project.dao;
 import com.revolut.assesment.project.constants.ApplicationConstants;
 import com.revolut.assesment.project.exception.CurrencyConversionNotSupportedException;
 import com.revolut.assesment.project.exception.InsufficientBalanceException;
+import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
 import com.revolut.assesment.project.vo.TransactionVO;
@@ -241,6 +242,44 @@ public class TransactionDaoTest {
         Mockito.verify(mockTxn).commit();
     }
 
+    @Test(expected = NoRecordsFoundException.class)
+    public void testGetTransactionWithAccountNotFound() throws Exception{
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+
+        Account fromAccount = Account.builder().balance(11.00).currency("USD").build();
+        Account toAccount = null;
+        TransactionDao transactionDao = new TransactionDao();
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
+
+
+        int toAccountId = 12;
+        int fromAccountId = 25;
+        Mockito.when(em.find(Mockito.eq(Account.class), Mockito.eq(toAccountId))).thenReturn(toAccount);
+        Mockito.when(em.find(Mockito.eq(Account.class), Mockito.eq(fromAccountId))).thenReturn(fromAccount);
+        TransactionVO transactionVO = TransactionVO.builder()
+                .transactionType(ApplicationConstants.TransactionType.TRANSFER)
+                .toAccountId(toAccountId)
+                .fromAccountId(fromAccountId)
+                .currency("USD")
+                .amount(12.00)
+                .build();
+
+        transactionDao.transact(transactionVO);
+
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
+    }
+
     @Test
     public void testGetTransaction() throws Exception {
         EntityManager em = Mockito.mock(EntityManager.class);
@@ -262,5 +301,25 @@ public class TransactionDaoTest {
         assertEquals(expected, actual);
         Mockito.verify(em).find(Mockito.eq(Transaction.class),Mockito.eq(txnId));
         Mockito.verify(mockFactory).createEntityManager();
+    }
+
+    @Test(expected = NoRecordsFoundException.class)
+    public void testGetTransactionNotFound() throws Exception {
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        TransactionDao transactionDao = new TransactionDao();
+
+        Integer txnId = 10;
+        Transaction expected = null;
+        Mockito.when(em.find(Mockito.eq(Transaction.class),Mockito.eq(txnId))).thenReturn(expected);
+
+        transactionDao.getTransaction(txnId);
     }
 }
