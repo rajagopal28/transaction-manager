@@ -1,5 +1,8 @@
 package com.revolut.assesment.project.dao;
 
+import com.revolut.assesment.project.constants.ApplicationConstants;
+import com.revolut.assesment.project.exception.DataValidationException;
+import com.revolut.assesment.project.exception.NoRecordsFoundException;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.User;
 import org.junit.Test;
@@ -35,12 +38,16 @@ public class AccountDaoTest {
         EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
         Mockito.when(em.getTransaction()).thenReturn(mockTxn);
 
-        Account mockAccount = Mockito.mock(Account.class);
+        Account account = Account.builder()
+                .balance(10.0)
+                .currency("")
+                .accountType(ApplicationConstants.AccountType.CREDIT)
+                .accountNumber("232").build();
 
-        accountDao.addAccount(mockAccount);
+        accountDao.addAccount(account);
 
         Mockito.verify(em, Mockito.times(2)).getTransaction();
-        Mockito.verify(em).persist(mockAccount);
+        Mockito.verify(em).persist(account);
         Mockito.verify(mockTxn).begin();
         Mockito.verify(mockTxn).commit();
     }
@@ -124,6 +131,53 @@ public class AccountDaoTest {
         assertEquals(expected, actual);
         Mockito.verify(em).find(Mockito.eq(Account.class),Mockito.eq(accountId));
         Mockito.verify(mockFactory).createEntityManager();
+    }
+
+    @Test(expected = NoRecordsFoundException.class)
+    public void testGetAccountNoRecord() throws Exception {
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        AccountDao accountDao = new AccountDao();
+
+        Integer accountId = 10;
+        Account expected = null;
+        Mockito.when(em.find(Mockito.eq(Account.class),Mockito.eq(accountId))).thenReturn(expected);
+
+        accountDao.getAccount(accountId);
+        Mockito.verify(em).find(Mockito.eq(Account.class),Mockito.eq(accountId));
+        Mockito.verify(mockFactory).createEntityManager();
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void testCreateAccountWithMissingData() throws Exception{
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+        AccountDao accountDao = new AccountDao();
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
+
+        Account mockAccount = Mockito.mock(Account.class);
+
+        accountDao.addAccount(mockAccount);
+
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
+        Mockito.verify(em).persist(mockAccount);
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
     }
 
 
