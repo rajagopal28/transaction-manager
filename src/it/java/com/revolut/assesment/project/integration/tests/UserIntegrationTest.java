@@ -47,13 +47,13 @@ public class UserIntegrationTest {
     }
 
     @Test
-    public void testEmptyResponse() throws Exception {
+    public void testEmptyResponse() {
         Response response = RestAssured.get(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+testPathUsers);
         response.then().statusCode(200).body("A", Matchers.empty());
     }
 
     @Test
-    public void testMultiUsersResponse() throws Exception {
+    public void testMultiUsersResponse() {
         final List<User> users = createNUsers(2);
         persistAllUsers(users);
         System.out.println(users);
@@ -69,7 +69,7 @@ public class UserIntegrationTest {
     }
 
     @Test
-    public void testSingleUserResponse() throws Exception {
+    public void testSingleUserResponse() {
         final List<User> users = createNUsers(2);
         persistAllUsers(users);
         User user = users.get(1);
@@ -85,15 +85,15 @@ public class UserIntegrationTest {
     }
 
     @Test
-    public void testSingleUserResponseUnAvailable() throws Exception {
+    public void testSingleUserResponseUnAvailable() {
 
         Response response = RestAssured.get(TEST_ENDPOINT_HOST + ":" + TEST_ENDPOINT_PORT + "/users/1");
-        response.then().statusCode(200);
-        response.then().body(Matchers.isEmptyString());
+        response.then().statusCode(404);
+        response.then().body("message",  Matchers.is("Unable to Find Record with given data!"));
     }
 
     @Test
-    public void testCreateUserResponse() throws Exception {
+    public void testCreateUserResponse() {
         final List<User> users = createNUsers(1);
         User user = users.get(0);
         Response response = RestAssured.given()
@@ -110,6 +110,22 @@ public class UserIntegrationTest {
 
         user.setId(id);
         deleteAllUsers(users);
+    }
+
+    @Test
+    public void testCreateUserMissingFieldResponse() {
+        final List<User> users = createNUsers(1);
+        User user = users.get(0);
+        user.setCity(null);
+        user.setEmail("");
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(user)
+                .post(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+ testPathUsers);
+        response.then().statusCode(400);
+
+        response.then().body("message", CoreMatchers.is("Required Field(s) are Invalid! Field(s) :[city, email]"));
     }
 
     private List<User> createNUsers(int n) {

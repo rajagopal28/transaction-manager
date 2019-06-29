@@ -22,6 +22,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
@@ -102,10 +103,9 @@ public class AccountIntegrationTest {
 
     @Test
     public void testSingleAccountResponseUnAvailable() throws Exception {
-
         Response response = RestAssured.get(TEST_ENDPOINT_HOST + ":" + TEST_ENDPOINT_PORT + "/users/1/accounts/1");
-        response.then().statusCode(200);
-        response.then().body(Matchers.isEmptyString());
+        response.then().statusCode(404);
+        response.then().body("message",  Matchers.is("Unable to Find Record with given data!"));
     }
 
     @Test
@@ -135,6 +135,31 @@ public class AccountIntegrationTest {
 
         account.setId(id);
         deleteAllAccountsAndUser(accounts, user);
+    }
+
+    @Test
+    public void testCreateAccountForInvalidDataResponse() throws Exception {
+        User user = User.builder().city("city1")
+                .firstName("firstName1")
+                .lastName("lastName1")
+                .email("email1")
+                .phoneNumber("phoneNumber1")
+                .dob("23/12/1990")
+                .gender("Female")
+                .build();
+        final List<Account> accounts = createNAccountsInUser(1);
+        persistAllAccountsInUser(new ArrayList<>(), user);// persist only user
+        Account account = accounts.get(0);
+        account.setAccountNumber(null);
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(account)
+                .post(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users/2000/accounts/");
+        response.then().statusCode(400);
+
+        response.then().body("message", CoreMatchers.is("Required Field(s) are Invalid! Field(s) :[accountNumber]"));
+        deleteAllAccountsAndUser(new ArrayList<>(), user);
     }
 
     private List<Account> createNAccountsInUser(int n) {
