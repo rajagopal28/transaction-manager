@@ -221,6 +221,38 @@ public class TransactionIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void testPerformDepositFailureWithInvalidData() {
+
+        TransactionVO transactionVO = new TransactionVO(null, null, 0.00, null, ApplicationConstants.TransactionType.CASH_DEPOSIT);
+
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(transactionVO)
+                .post(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users/1/accounts/1/transactions/");
+        response.then().statusCode(400);
+
+        response.then().body("message", CoreMatchers.is("Required Field(s) are Invalid! Field(s) :[currency, amount]"));
+
+    }
+
+    @Test
+    public void testPerformTwoAccountTransferFailureWithInvalidData() {
+
+        TransactionVO transactionVO = new TransactionVO(null, null, 0.00, null, ApplicationConstants.TransactionType.TRANSFER);
+
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(transactionVO)
+                .post(TEST_ENDPOINT_HOST+":"+TEST_ENDPOINT_PORT+"/users/1/accounts/1/transactions/");
+        response.then().statusCode(400);
+
+        response.then().body("message", CoreMatchers.is("Required Field(s) are Invalid! Field(s) :[fromAccountId, currency, amount]"));
+
+    }
+
+    @Test
     public void testPerformTwoAccountTransferCurrencyMismatchException() {
         User user = User.builder().city("city1")
                 .firstName("firstName1")

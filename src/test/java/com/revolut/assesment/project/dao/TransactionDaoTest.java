@@ -1,10 +1,7 @@
 package com.revolut.assesment.project.dao;
 
 import com.revolut.assesment.project.constants.ApplicationConstants;
-import com.revolut.assesment.project.exception.CurrencyConversionNotSupportedException;
-import com.revolut.assesment.project.exception.InsufficientBalanceException;
-import com.revolut.assesment.project.exception.NoRecordsFoundException;
-import com.revolut.assesment.project.exception.SameAccountTransferException;
+import com.revolut.assesment.project.exception.*;
 import com.revolut.assesment.project.model.Account;
 import com.revolut.assesment.project.model.Transaction;
 import com.revolut.assesment.project.vo.TransactionVO;
@@ -49,6 +46,7 @@ public class TransactionDaoTest {
         TransactionVO transactionVO = TransactionVO.builder()
                 .transactionType(ApplicationConstants.TransactionType.CASH_DEPOSIT)
                 .toAccountId(toAccountId)
+                .currency("")
                 .amount(10.00)
                 .build();
 
@@ -348,6 +346,92 @@ public class TransactionDaoTest {
                 .toAccountId(toAccountId)
                 .fromAccountId(toAccountId)
                 .currency("USD")
+                .amount(12.00)
+                .build();
+
+        transactionDao.transact(transactionVO);
+
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void testTransactDepositWithInvalidData() throws Exception{
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+
+        TransactionDao transactionDao = new TransactionDao();
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
+
+
+        TransactionVO transactionVO = TransactionVO.builder()
+                .transactionType(ApplicationConstants.TransactionType.CHEQUE_DEPOSIT)
+                .amount(0.00)
+                .build();
+
+        transactionDao.transact(transactionVO);
+
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void testTransactTransferWithInvalidData() throws Exception{
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+
+        TransactionDao transactionDao = new TransactionDao();
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
+
+
+        TransactionVO transactionVO = TransactionVO.builder()
+                .transactionType(ApplicationConstants.TransactionType.TRANSFER)
+                .amount(0.00)
+                .build();
+
+        transactionDao.transact(transactionVO);
+
+        Mockito.verify(em, Mockito.times(2)).getTransaction();
+        Mockito.verify(mockTxn).begin();
+        Mockito.verify(mockTxn).commit();
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void testTransactWithInvalidTransactionType() throws Exception{
+        EntityManager em = Mockito.mock(EntityManager.class);
+
+        EntityManagerFactory mockFactory = Mockito.mock(EntityManagerFactory.class);
+        Mockito.when(mockFactory.createEntityManager()).thenReturn(em);
+
+
+        PowerMockito.mockStatic(Persistence.class);
+        PowerMockito.doReturn(mockFactory).when(Persistence.class, "createEntityManagerFactory" , Mockito.anyString());
+
+
+        TransactionDao transactionDao = new TransactionDao();
+        EntityTransaction mockTxn = Mockito.mock(EntityTransaction.class);
+        Mockito.when(em.getTransaction()).thenReturn(mockTxn);
+
+
+        TransactionVO transactionVO = TransactionVO.builder()
                 .amount(12.00)
                 .build();
 

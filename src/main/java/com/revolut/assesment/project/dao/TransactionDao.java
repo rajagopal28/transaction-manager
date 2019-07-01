@@ -40,7 +40,10 @@ public class TransactionDao {
     }
 
     public Transaction transact(TransactionVO transactionVO) {
-        Transaction result = transactionVO.getTransaction();
+        if(transactionVO.getTransactionType() == null) {
+            throw new DataValidationException("[transactionType]");// invalid transactionType
+        }
+        Transaction result = null;
         switch (transactionVO.getTransactionType()) {
             case TRANSFER:
                 result = performAccountTransfer(transactionVO);
@@ -54,6 +57,7 @@ public class TransactionDao {
     }
 
     private Transaction depositTransfer(TransactionVO transactionVO) {
+        validateTransactionVO(transactionVO, true);
         Transaction transaction = transactionVO.getTransaction();
         em.getTransaction().begin();
         Account toAccount = em.find(Account.class, transactionVO.getToAccountId());
@@ -70,7 +74,7 @@ public class TransactionDao {
     }
 
     private Transaction performAccountTransfer(TransactionVO transactionVO) {
-        validateTransactionVO(transactionVO);
+        validateTransactionVO(transactionVO, false);
         if(transactionVO.getFromAccountId().equals(transactionVO.getToAccountId())) {
             throw new SameAccountTransferException();
         }
@@ -113,27 +117,25 @@ public class TransactionDao {
         return transaction;
     }
 
-    public void validateTransactionVO(TransactionVO transactionVO) {
+    public void validateTransactionVO(TransactionVO transactionVO, boolean isPartial) {
         List<String> failedFields = new ArrayList<>();
-        if(transactionVO.getToAccountId() == null) {
+        if (transactionVO.getToAccountId() == null) {
             failedFields.add("toAccountId");
         }
-        if(transactionVO.getFromAccountId() == null) {
+        if (!isPartial && transactionVO.getFromAccountId() == null) {
             failedFields.add("fromAccountId");
         }
-        if(transactionVO.getTransactionType() == null) {
+        if (transactionVO.getTransactionType() == null) {
             failedFields.add("transactionType");
         }
-        if(transactionVO.getAmount() < 0) {
-            failedFields.add("amount");
-        }
-        if(transactionVO.getCurrency() == null) {
+        if (transactionVO.getCurrency() == null) {
             failedFields.add("currency");
         }
-        if(!failedFields.isEmpty()) {
+        if (transactionVO.getAmount() <= 0) {
+            failedFields.add("amount");
+        }
+        if (!failedFields.isEmpty()) {
             throw new DataValidationException(failedFields.toString());
         }
     }
-
-
 }
