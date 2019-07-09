@@ -455,8 +455,8 @@ Following are the Libraries that are used as part of source and test cycles
 - Had a lot of challenges in setting up environment first with maven as there was a certificate issue that was messing with my maven commands due to network provider issues
 - Had difficulty in choosing the embedded server library as the prime objective was to keep the application light weight
 - Initially started with H2 in-memory DB and found out the hard way that it cannot be alive without a server/container or a EJB environment like JBoss.
-- Face quite a lot of difficulties when trying to adapt the JAX-RS framework over the jetty-server library provided by sun.net and not glassfish
-- Chose SQLite as it was serving the purpose and lightweight but I had to write a lot of initially as I was not able to find any ORM support like JPA adapting to JAX-RS and embedded server format.
+- Faced quite a lot of difficulties when trying to adapt the JAX-RS framework over the jetty-server library provided by sun.net and not the glassfish one.
+- Chose SQLite as it was serving the purpose and lightweight but I had to write a lot of boilerplate code initially as I was not able to find any ORM support like JPA adapting to JAX-RS and embedded server format.
 - But after spending a lot of time researching I have found a way to make JPA from hibernate support SQLite which let me throw away all my code involving explicit connection handling.
 - Had issues trying to setup integration tests, tried glassfish-jersey-client and faced a lot of dependency mismatch issues but finally found the restassured.io that helped me adapt to the sun.net jersey-client library.
 
