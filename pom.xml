@@ -7,7 +7,7 @@
     <properties>
         <jersey.version>1.18.2</jersey.version>
         <genson.version>0.98</genson.version>
-        <sqlite.version>3.27.2.1</sqlite.version>
+        <sqlite.version>3.41.2.2</sqlite.version>
         <junit.version>4.13.1</junit.version>
         <dbutils.version>1.6</dbutils.version>
     </properties>
